@@ -21,17 +21,29 @@
   </body>
 </template>
 
-<template name="todos">
+<template name="structures">
+  <!--
+  {{categories}}
   <ul>
-    {{#each todo}}
-        {{> todoItem}}
+    {{#each structure}}
+      {{> structureItem}}
     {{/each}}
   </ul>
+  <ul>
+      {{categories}}
+  </ul>
+-->
+  // display a drop-down menu containing a list of QMS categories
+  <select class="form-control" id="contactSelect" name="contactSelect">
+      {{{categories}}}
+  </select>
 </template>
 
-<template name="todoItem">
-  <li>{{name}}</li>
+<!--
+<template name="structureItem">
+  <li>{{namePath}}</li>
 </template>
+-->
 
 <template name="myNav">
 <!-- Bootstrap 3.3 style -->
