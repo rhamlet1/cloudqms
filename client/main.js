@@ -3,14 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 
 //import './main.html';
 
-Todos = new Mongo.Collection('todos');
 Structures = new Mongo.Collection('structures');
-
-Template.todos.helpers({
-    'todo': function(){
-        return Todos.find();
-    }
-});
 
 Template.structures.helpers({
   'structure': function(){
