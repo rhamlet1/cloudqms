@@ -8,6 +8,6 @@ Router.configure({
 });
 
 Router.route('/', {
-  name: 'todos',
-  template: 'todos',
+  name: 'structures',
+  template: 'structures',
 });
