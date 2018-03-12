@@ -22,5 +22,22 @@ Template.structures.helpers({
   		});
   //    console.log(options);
   		return options;
+  },
+  'treeArgs': {
+    collection: TreeData,
+    subscription: 'TreeData',
+    mapping: {
+      text: 'name',
+      aAttr: function (item) {
+        return {
+          title: item._id
+        };
+      }
+    },
+    events: {
+      changed: function(e, item) {
+        console.log("Item " + item + "selected.");
+      }
+    }
   }
 });
