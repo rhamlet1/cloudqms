@@ -26,5 +26,9 @@ msavin:mongol
 email
 accounts-base
 iron:router
+<<<<<<< HEAD
 qnipp:jstree
 qnipp:treeview
+=======
+aldeed:autoform
+>>>>>>> 073967501c626485d60eef5499216d34ed405062
