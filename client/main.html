@@ -1,20 +1,77 @@
-<head>
+<template name="main">
+  <head>
     <title>cloud qms</title>
-</head>
-<body>
- {{> todos}}
-</body>
+  </head>
 
-<template name="todos">
-    <ul>
-    {{#each todo}}
-        {{> todoItem}}
+<!--
+  within the document body three areas are created, two with named regions
+  and a default unnamed region. The myNav and myFooter templates will always be
+  displayed in their respective regions whilst all other templates will be
+  shown in the default yield region. Yield displays templates directed to by
+  the Router.
+-->
+  <body>
+    <div id="wrapper" class="page page-wrap page-home">
+      <div id="page-content-wrapper">
+        {{> yield region="nav"}}
+        {{> yield}}
+        {{> yield region="footer"}}
+      </div>
+    </div>
+  </body>
+</template>
+
+<template name="structures">
+  <!--
+  {{categories}}
+  <ul>
+    {{#each structure}}
+      {{> structureItem}}
     {{/each}}
-
-    
-    </ul>
+  </ul>
+  <ul>
+      {{categories}}
+  </ul>
+-->
+  <!-- display a drop-down menu containing a list of QMS categories -->
+  <select class="form-control" id="contactSelect" name="contactSelect">
+      {{{categories}}}
+  </select>
 </template>
 
-<template name="todoItem">
-    <li>{{name}}</li>
+<!--
+<template name="structureItem">
+  <li>{{namePath}}</li>
 </template>
+-->
+
+<template name="myNav">
+<!-- Bootstrap 3.3 style -->
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav navbar-right">
+          This is the nav bar
+          <!--
+          {{> loginButtons align="right"}}
+        -->
+        </ul>
+      </div>
+    </div>
+  </nav>
+</template>
+
+<template name="myFooter">
+  <hr />
+  <p class="centered">Copyright &copy; Optimus (Aberdeen) Limited, 2018</p>
+</template>
+
+<template name="loading">
+    <p>Loading...</p>
+</template>
+
+<!---This for github -->
