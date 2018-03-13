@@ -1,8 +1,6 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-//import './main.html';
-
 Structures = new Mongo.Collection('structures');
 
 Template.structures.helpers({
@@ -24,5 +22,22 @@ Template.structures.helpers({
   		});
   //    console.log(options);
   		return options;
+  },
+  'treeArgs': {
+    collection: TreeData,
+    subscription: 'TreeData',
+    mapping: {
+      text: 'name',
+      aAttr: function (item) {
+        return {
+          title: item._id
+        };
+      }
+    },
+    events: {
+      changed: function(e, item) {
+        console.log("Item " + item + "selected.");
+      }
+    }
   }
 });
