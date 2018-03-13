@@ -28,3 +28,4 @@ accounts-base
 iron:router
 qnipp:jstree
 qnipp:treeview
+twbs:bootstrap

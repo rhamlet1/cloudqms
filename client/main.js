@@ -23,6 +23,9 @@ Template.structures.helpers({
   //    console.log(options);
   		return options;
   },
+});
+
+Template.qmsTree.helpers({
   'treeArgs': {
     collection: TreeData,
     subscription: 'TreeData',
