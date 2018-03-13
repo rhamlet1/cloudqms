@@ -13,12 +13,42 @@
   <body>
     <div id="wrapper" class="page page-wrap page-home">
       <div id="page-content-wrapper">
-        {{> yield region="nav"}}
-        {{> yield}}
-        {{> yield region="footer"}}
+        <div class="container-fluid">
+          {{> yield region="nav"}}
+          <div class="row">
+            <div class="col-sm-4">
+              <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">
+                  <h4 class="panel-title">QMS Structure</h4>
+                </div>
+                <div class="panel-body">
+                  {{> yield region="tree"}}
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-8">
+              <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">
+                  <h4 class="panel-title">QMS Contents</h4>
+                </div>
+                <div class="panel-body">
+                  {{> yield}}
+                </div>
+              </div>
+            </div>
+          </div>
+          {{> yield region="footer"}}
+        </div>
       </div>
     </div>
   </body>
+</template>
+
+<template name="qmsTree">
+  <!-- display the QMS file structure using TreeView package-->
+  {{> TreeView treeArgs}}
 </template>
 
 <template name="structures">
@@ -38,8 +68,7 @@
       {{{categories}}}
   </select> -->
 
-  <!-- display the QMS file structure using TreeView package-->
-  {{> TreeView treeArgs}}
+  <h1>Content goes here</h1>
 </template>
 
 <!--
