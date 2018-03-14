@@ -1,0 +1,107 @@
+<template name="register">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-3"></div>
+      <div class="col-sm-6">
+        <div class="panel panel-default">
+          <div class="panel-heading">Register</div>
+          <div class="panel-body">
+            <form class="register form-horizontal">
+              <div class="form-group">
+                <label for="forename" class="col-sm-2 control-label">Forename</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="forename" name="forename" placeholder="Forename">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="surname" class="col-sm-2 control-label">Surname</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="surname" name="surname" placeholder="Surname">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="jobTitle" class="col-sm-2 control-label">Job title</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="jobTitle" name="jobTitle" placeholder="Job title">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="company" class="col-sm-2 control-label">Company</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="company" name="company" placeholder="Company">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
+                <div class="col-sm-10">
+                  <input type="email" class="form-control" id="inputEmail3" name="email" placeholder="Email">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
+                <div class="col-sm-10">
+                  <input type="password" class="form-control" id="inputPassword3" name="password" placeholder="Password">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="confirmPassword3" class="col-sm-2 control-label">Confirm Password</label>
+                <div class="col-sm-10">
+                  <input type="password" class="form-control" id="inputPassword4" name="confirmPassword" placeholder="Confirm Password">
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <button type="submit" class="btn btn-default btn-block">Register &amp; Sign in</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-3"></div>
+    </div>
+  </div>
+</template>
+
+<template name="login">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-3"></div>
+      <div class="col-sm-6">
+        <div class="panel panel-default">
+          <div class="panel-heading">Login</div>
+          <div class="panel-body">
+            <form class="login form-horizontal">
+              <div class="form-group">
+                <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
+                <div class="col-sm-10">
+                  <input type="email" class="form-control" id="inputEmail3" name="email" placeholder="Email">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
+                <div class="col-sm-10">
+                  <input type="password" class="form-control" id="inputPassword3" name="password" placeholder="Password">
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <button type="submit" class="login btn btn-default btn-block">Sign in</button>
+                </div>
+              </div>
+            </form>
+            <div class="form-group col-sm-12">
+              <div class="col-sm-offset-4 col-sm-4">
+                <a data-url="signUp" href="{{pathFor route='register'}}">
+                  <i class="icon-icon-next-short"></i>
+                  <span>Register an account</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-3"></div>
+    </div>
+  </div>
+</template>

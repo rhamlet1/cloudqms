@@ -87,10 +87,18 @@
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav navbar-right">
-          This is the nav bar
-          <!--
+<!--
           {{> loginButtons align="right"}}
-        -->
+-->
+          {{#if currentUser}}
+            <li>
+              <a href="#"><span class="logout glyphicon glyphicon-log-out" aria-hidden="true" title="Logout"></span></a>
+            </li>
+          {{else}}
+            <li>
+              <a href="{{pathFor route='login'}}"><span class="login glyphicon glyphicon-log-in" aria-hidden="true" title="Login"></span></a>
+            </li>
+          {{/if}}
         </ul>
       </div>
     </div>

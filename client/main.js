@@ -3,6 +3,10 @@ import { ReactiveVar } from 'meteor/reactive-var';
 
 Structures = new Mongo.Collection('structures');
 
+Template.main.helpers({
+  currentUser: () => Meteor.userId(),
+});
+
 Template.structures.helpers({
   'structure': function(){
       return Structures.find({}, { sort: { 'namePath.0': 1 } });
