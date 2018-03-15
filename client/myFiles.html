@@ -1,15 +1,35 @@
 <template name="dragArea">
   <div class='wrapper'>
-    <div class='container'>
-      <div class='fileDrop'>
-        {{#each myData}}
-          {{filename}}
-        {{/each}}
-      </div>
+    <div class='container-fluid'>
+      <div class="row">
 
-    </div>
-    <div class='container'>
-      <div class='fileBrowse'>Browse here</div>
+        <div class="col-sm-6">
+          <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">
+              <h4 class="panel-title">Drop here</h4>
+            </div>
+            <div class="fileDrop panel-body">
+              {{#each myData}}
+                <li class="fileName">{{filename}}</li>
+              {{/each}}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-6">
+          <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">
+              <h4 class="panel-title">Browse here</h4>
+            </div>
+            <div class="fileBrowse panel-body">
+              <object data={{myFile}}>{{fileUpload}}</object>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
 </template>

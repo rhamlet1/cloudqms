@@ -20,6 +20,13 @@ Meteor.publish('myData',
   }
 );
 
+// not used at present
+Meteor.publish('mySelectedFile',
+  function (selectedFile) {
+      return myFiles.findOne({ 'filename': selectedFile }).get();
+  }
+);
+
 // Allow rules for security. Should look familiar!
 // Without these, no file writes would be allowed
 myFiles.allow({

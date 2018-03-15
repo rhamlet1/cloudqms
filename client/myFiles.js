@@ -3,12 +3,35 @@ Template.dragArea.rendered = function(){
   myFiles.resumable.assignDrop($(".fileDrop"));
 
   // This assigns a browse action to a DOM node
-  myFiles.resumable.assignBrowse($(".fileBrowse"));
+//  myFiles.resumable.assignBrowse($(".fileBrowse"));
 }
 
+Template.dragArea.onCreated(() => {
+  Session.set('selectedFile', 'empty');
+});
+
 Template.dragArea.helpers({
-  'myFiles': function(){
-      return myFiles.files.find({});
+  'myData': function(){
+      return myFiles.find({});
+  },
+  'fileUpload': function () {
+    const selectedFile = Session.get('selectedFile');
+    console.log("fileUpload: " + selectedFile);
+    return selectedFile;
+  },
+  'myFile': function () {
+    const selectedFile = Session.get('selectedFile');
+    console.log("myFile: " + selectedFile);
+    const mySelectedFile = myFiles.findOne({ 'filename': selectedFile });
+    console.log("mySelectedFile: " + mySelectedFile);
+    return mySelectedFile.url();
+  }
+});
+
+Template.dragArea.events({
+  'click .fileName': function(){
+    console.log("this.filename: " + this.filename);
+    Session.set('selectedFile', this.filename);
   },
 });
 
