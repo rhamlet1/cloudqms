@@ -7,7 +7,16 @@ Template.main.helpers({
   currentUser: () => Meteor.userId(),
 });
 
-Template.structures.helpers({
+Template.myNav.events({
+  'click .logout': (event) => {
+    event.preventDefault();
+    Meteor.logout(function(err){
+      console.log(err);
+    });
+  },
+});
+
+Template.home.helpers({
   'structure': function(){
       return Structures.find({}, { sort: { 'namePath.0': 1 } });
   },

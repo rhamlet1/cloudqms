@@ -51,7 +51,7 @@
   {{> TreeView treeArgs}}
 </template>
 
-<template name="structures">
+<template name="home">
   <!--
   {{categories}}
   <ul>
@@ -69,6 +69,7 @@
   </select> -->
 
   <h1>Content goes here</h1>
+  {{> dragArea}}
 </template>
 
 <!--
@@ -92,7 +93,7 @@
 -->
           {{#if currentUser}}
             <li>
-              <a href="#"><span class="logout glyphicon glyphicon-log-out" aria-hidden="true" title="Logout"></span></a>
+              <a href="#" class="logout"><span class="logout glyphicon glyphicon-log-out" aria-hidden="true" title="Logout"></span></a>
             </li>
           {{else}}
             <li>

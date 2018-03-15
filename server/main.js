@@ -25,4 +25,6 @@ Meteor.startup(() => {
     console.log("Filled collection TreeData");
   }
 
+//  Meteor.call("addUser");
+
 });

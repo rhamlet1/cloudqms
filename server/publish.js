@@ -8,7 +8,7 @@ Meteor.publish('TreeData', function() {
 
 // Only publish files owned by this userId, and ignore
 // file chunks being used by Resumable.js for current uploads
-Meteor.publish('myFiles',
+Meteor.publish('myData',
   function (clientUserId) {
     if (clientUserId === this.userId) {
       return myFiles.find({ 'metadata._Resumable': { $exists: false },

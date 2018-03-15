@@ -1,11 +1,15 @@
 <template name="dragArea">
   <div class='wrapper'>
-    <div class='fileDrop container'>
-      {{#each items}}
-        <div>{{name}}</div>
-      {{/each}}
+    <div class='container'>
+      <div class='fileDrop'>
+        {{#each myData}}
+          {{filename}}
+        {{/each}}
+      </div>
+
     </div>
-    <div class='fileBrowse container'>
+    <div class='container'>
+      <div class='fileBrowse'>Browse here</div>
     </div>
   </div>
 </template>

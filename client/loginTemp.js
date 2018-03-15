@@ -19,6 +19,16 @@ Template.register.onRendered(() => {
           confirmPassword: 'Password and confirm password do not match.'
         });
       } else {
+        Meteor.call(
+          "addUser",
+          email,
+          password,
+          forename,
+          surname,
+          jobTitle,
+          company
+        );
+/*
         Accounts.createUser({
           email,
           password,
@@ -35,43 +45,48 @@ Template.register.onRendered(() => {
                 email: 'That email address is already registered.'
               });
               const userEmail = $('[name=email]').val();
-              logActivity(
-                '',
-                'Users',
-                userEmail,
-                'Attempt to register account using existing email address.'
-              );
+//              logActivity(
+//                '',
+//                'Users',
+//                userEmail,
+//                'Attempt to register account using existing email address.'
+//              );
+              console.log("User account already exists");
             }
+            console.log("Error: " + error);
           } else {
             const currentUser = Meteor.userId();
             if (currentUser) {
-              const activity = 'Account created for user ' + getUserName() + '.';
-              logActivity(
-                currentUser,
-                'Users',
-                currentUser,
-                activity,
-              );
-              sendEmailToAdmin(
-                Meteor.user().emails[0].address,
-                'Registration notification',
-                getUserName() + ' requests roles to be set up.'
-              );
-              insertUserActionsTable(Meteor.userId());
-              insertUserContactsTable(Meteor.userId());
-              insertUserContactsParams(Meteor.userId());
+//              const activity = 'Account created for user ' + getUserName() + '.';
+//              logActivity(
+//                currentUser,
+//                'Users',
+//                currentUser,
+//                activity,
+//              );
+//              sendEmailToAdmin(
+//                Meteor.user().emails[0].address,
+//                'Registration notification',
+//                getUserName() + ' requests roles to be set up.'
+//              );
+//              insertUserActionsTable(Meteor.userId());
+//              insertUserContactsTable(Meteor.userId());
+//              insertUserContactsParams(Meteor.userId());
+              console.log("User account created");
             } else {
               const userEmail = $('[name=email]').val();
-              logActivity(
-                '',
-                'Users',
-                userEmail,
-                'Attempted account registration failed.',
-              );
+//              logActivity(
+//                '',
+//                'Users',
+//                userEmail,
+//                'Attempted account registration failed.',
+//              );
+              console.log("User account creation failed");
             }
             Router.go('home');
           }
         });
+*/
       }
     },
   });
@@ -80,10 +95,6 @@ Template.register.onRendered(() => {
 Template.login.events({
   'submit .login': (event) => {
     event.preventDefault();
-  },
-  'click .forgot': (event) => {
-    event.preventDefault();
-    Accounts.forgotPassword('rhamlet@hdcl.co.uk');
   },
 });
 
@@ -99,44 +110,44 @@ Template.login.onRendered(() => {
               email: 'That email address is not registered.',
             });
             const userEmail = $('[name=email]').val();
-            logActivity(
-              '',
-              'Users',
-              userEmail,
-              'Attempt to login using unregistered email address.',
-            );
+//            logActivity(
+//              '',
+//              'Users',
+//              userEmail,
+//              'Attempt to login using unregistered email address.',
+//            );
           }
           if (error.reason === 'Incorrect password') {
             validator.showErrors({
               password: 'You entered an incorrect password.',
             });
             const userEmail = $('[name=email]').val();
-            logActivity(
-              '',
-              'Users',
-              userEmail,
-              'Attempt to login with incorrect password.',
-            );
+//            logActivity(
+//              '',
+//              'Users',
+//              userEmail,
+//              'Attempt to login with incorrect password.',
+//            );
           }
         } else {
           const currentUser = Meteor.userId();
           if (currentUser) {
             const thisUser = Meteor.users.findOne({ _id: currentUser });
             const activity = getUserName() + ' logged in.';
-            logActivity(
-              currentUser,
-              'Users',
-              currentUser,
-              activity,
-            );
+//            logActivity(
+//              currentUser,
+//              'Users',
+//              currentUser,
+//              activity,
+//            );
           } else {
             const userEmail = $('[name=email]').val();
-            logActivity(
-              '',
-              'Users',
-              userEmail,
-              'Attempted account login failed.',
-            );
+//            logActivity(
+//              '',
+//              'Users',
+//              userEmail,
+//              'Attempted account login failed.',
+//            );
           }
           const currentRoute = Router.current().route.getName();
           if (currentRoute === 'login') {

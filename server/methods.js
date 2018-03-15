@@ -370,5 +370,75 @@ Meteor.methods({
 
     TreeData.remove({});
     insertTestData(null, testData);
-  }
+  },
+  addUser(email, password, forename, surname,jobTitle, company) {
+    var existing = Meteor.users.findOne({'emails.0.address': email});
+    if (!existing) {
+      Accounts.createUser({
+        email: email,
+        password: password,
+        profile: {
+          forename,
+          surname,
+          jobTitle,
+          company,
+        }
+/*      }, (error) => {
+        if (error) {
+          if (error.reason === 'Email already exists.') {
+            validator.showErrors({
+              email: 'That email address is already registered.'
+            });
+            const userEmail = $('[name=email]').val();
+//              logActivity(
+//                '',
+//                'Users',
+//                userEmail,
+//                'Attempt to register account using existing email address.'
+//              );
+            console.log("User account already exists");
+          }
+          console.log("Error: " + error);
+        } else {
+          const currentUser = Meteor.userId();
+          if (currentUser) {
+//              const activity = 'Account created for user ' + getUserName() + '.';
+//              logActivity(
+//                currentUser,
+//                'Users',
+//                currentUser,
+//                activity,
+//              );
+//              sendEmailToAdmin(
+//                Meteor.user().emails[0].address,
+//                'Registration notification',
+//                getUserName() + ' requests roles to be set up.'
+//              );
+//              insertUserActionsTable(Meteor.userId());
+//              insertUserContactsTable(Meteor.userId());
+//              insertUserContactsParams(Meteor.userId());
+            console.log("User account created");
+          } else {
+            const userEmail = $('[name=email]').val();
+//              logActivity(
+//                '',
+//                'Users',
+//                userEmail,
+//                'Attempted account registration failed.',
+//              );
+            console.log("User account creation failed");
+          }
+          Router.go('home');
+        }
+*/
+      });
+    }
+/*
+    Meteor.users.remove({});
+    Meteor.users.insert({
+      email: "rhamlet@hdcl.co.uk",
+      password: "cloudqms"
+    });
+    */
+  },
 })

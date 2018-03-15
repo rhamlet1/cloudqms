@@ -23,7 +23,6 @@ accounts-password
 useraccounts:unstyled
 msavin:mongol
 email
-accounts-base
 iron:router
 qnipp:jstree
 qnipp:treeview
@@ -31,3 +30,5 @@ twbs:bootstrap
 vsivsi:file-collection
 benjaminrh:jquery-cookie
 session
+themeteorchef:jquery-validation
+accounts-ui

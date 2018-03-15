@@ -1,8 +1,16 @@
-// This assigns a file upload drop zone to some DOM node
-myFiles.resumable.assignDrop($(".fileDrop"));
+Template.dragArea.rendered = function(){
+  // This assigns a file upload drop zone to some DOM node
+  myFiles.resumable.assignDrop($(".fileDrop"));
 
-// This assigns a browse action to a DOM node
-myFiles.resumable.assignBrowse($(".fileBrowse"));
+  // This assigns a browse action to a DOM node
+  myFiles.resumable.assignBrowse($(".fileBrowse"));
+}
+
+Template.dragArea.helpers({
+  'myFiles': function(){
+      return myFiles.files.find({});
+  },
+});
 
 // When a file is added via drag and drop
 myFiles.resumable.on('fileAdded', function (file) {
