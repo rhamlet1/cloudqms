@@ -25,6 +25,11 @@ Meteor.startup(() => {
     console.log("Filled collection TreeData");
   }
 
-//  Meteor.call("addUser");
+  Meteor.publish('allFiles',
+    function (selectedFile) {
+        return myFiles.find({});
+    }
+  );
+
 
 });
