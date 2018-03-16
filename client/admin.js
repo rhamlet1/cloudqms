@@ -1,19 +1,26 @@
+Meteor.subscribe('allFiles');
+
+
 Template.dragArea.rendered = function(){
   // This assigns a file upload drop zone to some DOM node
   myFiles.resumable.assignDrop($(".fileDrop"));
-
-  // This assigns a browse action to a DOM node
-//  myFiles.resumable.assignBrowse($(".fileBrowse"));
 }
 
 Template.dragArea.onCreated(() => {
   Session.set('selectedFile', 'empty');
 });
 
+Template.dragArea.onRendered(function () {
+    const w = document.getElementById("fileBrowse").clientWidth;
+    console.log("divWidth set: " + w.toString());
+    Session.set('elementWidth', w.toString());
+});
+
 Template.dragArea.helpers({
   'myData': function(){
       return myFiles.find({});
   },
+<<<<<<< HEAD:client/myFiles.js
   'fileUpload': function () {
     const selectedFile = Session.get('selectedFile');
     console.log("fileUpload: " + selectedFile);
@@ -28,6 +35,8 @@ Template.dragArea.helpers({
     console.log("mySelectedFile: " + '/home/richard/Pictures/' + selectedFile);
     return '/home/richard/Pictures/"' + selectedFile + '"';
   }
+=======
+>>>>>>> f7cec6e20cc97e896bb71bea6d214347c485b4b2:client/admin.js
 });
 
 Template.dragArea.events({

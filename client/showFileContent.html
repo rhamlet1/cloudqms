@@ -1,0 +1,22 @@
+<template name="showFileContent">
+  <div class='wrapper'>
+    <div class='container-fluid'>
+      <div class="row">
+
+        <div class="col-sm-12">
+          <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="fileBrowse panel-body" id="fileBrowse">
+                  <object data="{{myFile}}" type="application/pdf" class="fileBrowse" height="450">
+                      alt : <a href="{{myFile}}">{{fileUpload}}</a>
+                  </object>
+<!--              <object data="{{myFile}}">{{fileUpload}}</object>
+              <embed src={{myFile}} width="200px" height="600px"> -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</template>
