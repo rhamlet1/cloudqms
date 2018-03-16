@@ -23,8 +23,10 @@ Template.dragArea.helpers({
     const selectedFile = Session.get('selectedFile');
     console.log("myFile: " + selectedFile);
     const mySelectedFile = myFiles.findOne({ 'filename': selectedFile });
-    console.log("mySelectedFile: " + mySelectedFile);
-    return mySelectedFile.url();
+//    console.log("mySelectedFile: " + '/gridfs/myFiles/:md5/' + mySelectedFile.md5);
+//    return '/gridfs/myFiles/:md5/' + mySelectedFile.md5;
+    console.log("mySelectedFile: " + '/home/richard/Pictures/' + selectedFile);
+    return '/home/richard/Pictures/"' + selectedFile + '"';
   }
 });
 
