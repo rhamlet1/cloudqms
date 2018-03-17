@@ -56,6 +56,10 @@ less@2.7.9
 livedata@1.0.18
 localstorage@1.1.1
 logging@1.1.17
+manuel:isdev@1.0.0
+manuel:reactivearray@1.0.6
+manuel:viewmodel@6.3.4
+manuel:viewmodel-debug@2.7.1
 meteor@1.7.2
 meteor-base@1.1.0
 meteortoys:toykit@4.0.1

@@ -20,23 +20,6 @@ Template.dragArea.helpers({
   'myData': function(){
       return myFiles.find({});
   },
-<<<<<<< HEAD:client/myFiles.js
-  'fileUpload': function () {
-    const selectedFile = Session.get('selectedFile');
-    console.log("fileUpload: " + selectedFile);
-    return selectedFile;
-  },
-  'myFile': function () {
-    const selectedFile = Session.get('selectedFile');
-    console.log("myFile: " + selectedFile);
-    const mySelectedFile = myFiles.findOne({ 'filename': selectedFile });
-//    console.log("mySelectedFile: " + '/gridfs/myFiles/:md5/' + mySelectedFile.md5);
-//    return '/gridfs/myFiles/:md5/' + mySelectedFile.md5;
-    console.log("mySelectedFile: " + '/home/richard/Pictures/' + selectedFile);
-    return '/home/richard/Pictures/"' + selectedFile + '"';
-  }
-=======
->>>>>>> f7cec6e20cc97e896bb71bea6d214347c485b4b2:client/admin.js
 });
 
 Template.dragArea.events({

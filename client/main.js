@@ -38,12 +38,13 @@ Template.home.helpers({
   },
 });
 
+/*
 Template.qmsTree.helpers({
   'treeArgs': {
-    collection: TreeData,
-    subscription: 'TreeData',
+    collection: myFiles,
+    subscription: 'allFiles',
     mapping: {
-      text: 'name',
+      text: 'filename',
       aAttr: function (item) {
         return {
           title: item._id
@@ -51,12 +52,43 @@ Template.qmsTree.helpers({
       }
     },
     events: {
-      changed: function(e, item) {
-        console.log("Item " + item + "selected.");
+      changed: function(e, item, data) {
+        Session.set('selectedFile', data.item_data.filename);
+        console.log("Item " + item + " selected.");
+        console.log("Item " + data.item_data.filename + " selected.");
+      },
+      create(e, item, data) {
+        instance.message.set("Creating node on " + data.parent);
+        return myFiles.insert({ name: 'New node', parent: data.parent });
+      },
+      rename(e, item, data) {
+        instance.message.set("Renaming " + item + " to " + data.text);
+        myFiles.update(item, { $set: { name: data.text } });
+      },
+      delete(e, item, data) {
+        instance.message.set("Deleting " + item);
+        recursiveDelete(item);
+      },
+      copy(e, item, data) {
+        if (data.parent == '#') {
+          instance.message.set("Copying to the root is forbidden.");
+          return false;
+        }
+        return instance.message.set("Recursively copying nodes.");
+        recursiveCopy(item, data.parent);
+      },
+      move(e, item, data) {
+        if (data.parent == '#') {
+          instance.message.set("Moving to the root is forbidden.");
+          return false;
+        }
+        instance.message.set("Recursively moving nodes.");
+        myFiles.update(item, { $set: { parent: data.parent } });
       }
     }
   }
 });
+*/
 
 $.validator.setDefaults({
   rules: {
