@@ -34,7 +34,9 @@ myFiles.allow({
   insert: function (userId, file) {
     // Assign the proper owner when a file is created
     file.metadata = file.metadata || {};
+    console.log('allow userId: ' + userId);
     file.metadata.owner = userId;
+    file.metadata.parent = null;
     return true;
   },
   // Only owners can remove a file

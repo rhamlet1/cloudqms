@@ -19,24 +19,6 @@ ViewModel.share({
   }
 });
 
-function recursiveCopy(id, parent) {
-  let item = myFiles.findOne(id);
-  delete item._id;
-  item.parent = parent;
-  let newId = myFiles.insert(item);
-
-  myFiles.find({ 'metadata.parent': id }).forEach(function (item) {
-    recursiveCopy(item._id, newId);
-  });
-}
-
-function recursiveDelete(id) {
-  myFiles.find({ 'metadata.parent': id }).forEach(function (item) {
-    recursiveDelete(item._id);
-  });
-  myFiles.remove(id);
-}
-
 Template.TreeData.onCreated(function () {
   let instance = this;
   instance.message = new ReactiveVar('Messages will be put here.');
@@ -59,17 +41,21 @@ Template.TreeData.viewmodel({
     config = {
       collection: myFiles,
       subscription: 'allFiles',
+//      parent: this.metadata.parent,
       parent: this.parentNode(),
       select: this.selectNode(),
       openAll: this.openAll(),
       selectAll: this.selectAll(),
       mapping: {
         text: 'filename',
-//        parent: function (item) {
-//          thisParent = myFiles.find({ filename: text }).metadata.parent;
-//          console.log("thisParent: " + thisParent);
-//          return thisParent;
-//        },
+        parent: 'meteor.parent',
+/*        parent: function (item) {
+          const fcId = new Mongo.ObjectID(item);
+          thisParent = myFiles.findOne({ _id: fcId }).metadata.parent;
+          console.log("mapping thisParent: " + thisParent);
+          return thisParent;
+        },
+*/
         aAttr: function (item) {
           return {
             title: item._id
@@ -79,47 +65,60 @@ Template.TreeData.viewmodel({
       jstree: { plugins },
       events: {
         changed(e, item, data) {
-          // item is an array of id
+          // item is an array of id strings
           // File Collection requires the array to be in the form of a Meteor ObjectID
-          const fcId = item['0'];
-          console.log('item type: ' + typeof item);
-          console.log('fcId type: ' + typeof fcId);
-          console.log('data type: ' + typeof data);
-          Session.set('selectedFile', data.item_data.filename);
-          console.log('changed: ' + data);
+          console.log('changed item typeof: ' + typeof item);
+          console.log('changed item : ' +  item);
+          const fcId = new Mongo.ObjectID(item['0']);
+          console.log('changed fcId typeof: ' + typeof fcId);
+          console.log('changed fcId: ' + typeof fcId);
+//          console.log('changed: ' + data);
+          Session.set('selectedFile', fcId);
+//          Session.set('selectedFile', item);
+//          console.log('changed: ' + data);
           instance.message.set("Changing selection. " + item.length + " nodes are selected.");
         },
         create(e, item, data) {
+          console.log('create item typeof: ' + typeof item);
           instance.message.set("Creating node on " + data.parent);
 //          return myFiles.insert({ name: 'New node', parent: data.parent });
             console.log('create: ' + data);
           return Meteor.call('insertFileParent', data.parent);
         },
         rename(e, item, data) {
-          instance.message.set("Renaming " + item + " to " + data.text);
-          myFiles.update(item, { $set: { name: data.text } });
+          console.log('rename item typeof: ' + typeof item);
+          const fcId = new Mongo.ObjectID(item);
+          instance.message.set("Renaming " + fcId + " to " + data.text);
+          myFiles.update({ _id: fcId }, { $set: { filename: data.text } });
         },
         delete(e, item, data) {
-          instance.message.set("Deleting " + item);
-          recursiveDelete(item);
+          console.log('delete item typeof: ' + typeof item);
+          const fcId = new Mongo.ObjectID(item);
+          instance.message.set("Deleting " + fcId);
+          Meteor.call('recursiveDelete', fcId);
         },
         copy(e, item, data) {
+          console.log('copy item typeof: ' + typeof item);
+          const fcId = new Mongo.ObjectID(item);
           if (data.parent == '#') {
             instance.message.set("Copying to the root is forbidden.");
             return false;
           }
           instance.message.set("Recursively copying nodes.");
-          recursiveCopy(item, data.parent);
+          Meteor.call('recursiveCopy', fcId, data.parent);
         },
         move(e, item, data) {
+//          console.log('move item: ' + item);
+          console.log('move item typeof: ' + typeof item);
+          const fcId = new Mongo.ObjectID(item);
           if (data.parent == '#') {
             instance.message.set("Moving to the root is forbidden.");
             return false;
           }
-          console.log('move: ' + data);
+//          console.log('move data: ' + data);
           instance.message.set("Recursively moving nodes.");
 //          myFiles.update(item, { $set: { parent: data.parent } });
-          return Meteor.call('updateFileParent', item, data.parent);
+          return Meteor.call('updateFileParent', fcId, data.parent);
         }
       }
     }

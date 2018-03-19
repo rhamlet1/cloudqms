@@ -2,6 +2,7 @@ Meteor.methods({
   // Implement latency compensated update using Meteor methods and localUpdate
   insertFileParent: function (parent) {
     // Always check method params!
+    console.log('typeof parent: ' + typeof parent);
     check(parent, String);
     // You'll probably want to do some kind of ownership check here...
 
@@ -21,22 +22,52 @@ Meteor.methods({
       // Optional options here
       // Optional callback here
   },
+
   updateFileParent: function (fileId, parent) {
     // Always check method params!
+    console.log('updateFileParent typeof fileId: ' + typeof fileId);
+    console.log('updateFileParent fileId: ' +  fileId);
+    console.log('updateFileParent typeof parent: ' + typeof parent);
     check(fileId, Mongo.ObjectID);
     check(parent, String);
+
     // You'll probably want to do some kind of ownership check here...
+    // retrieve owner
+    const owner = myFiles.findOne({ _id: fileId }).metadata.owner;
+    console.log('updateFileParent owner: ' + owner);
 
 //    const update = myFiles.update;  // Server actually persists the update
 
     // Use whichever function the environment dictates
     myFiles.update({ _id: fileId }, {
-        $set: { 'metadata.parent': parent }
+        $set: { metadata: { owner: owner, parent: parent } }
+      },
+      function (err, _id) {  // Callback to .insert
+        if (err) { return console.error("File update failed!", err); }
       }
       // Optional options here
       // Optional callback here
     );
   },
+  
+  recursiveCopy: function (id, parent) {
+    let item = myFiles.findOne({ _id: id });
+    delete item._id;
+    item.metadata.parent = parent;
+    let newId = myFiles.insert(item);
+
+    myFiles.find({ 'metadata.parent': id }).forEach(function (item) {
+      recursiveCopy(item._id, newId);
+    });
+  },
+
+  recursiveDelete: function (id) {
+    myFiles.find({ 'metadata.parent': id }).forEach(function (item) {
+      recursiveDelete(item._id);
+    });
+    myFiles.remove({ _id: id });
+  },
+
 
   resetData() {
     let testData = {
