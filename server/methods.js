@@ -1,4 +1,43 @@
 Meteor.methods({
+  // Implement latency compensated update using Meteor methods and localUpdate
+  insertFileParent: function (parent) {
+    // Always check method params!
+    check(parent, String);
+    // You'll probably want to do some kind of ownership check here...
+
+    // Use whichever function the environment dictates
+    myFiles.insert({
+      _id: new Meteor.Collection.ObjectID(),
+      filename: 'New node',
+      contentType: '',
+      metadata: { owner: Meteor.userId(), parent: parent },
+      aliases: [ ]
+    },
+    function (err, _id) {  // Callback to .insert
+      if (err) { return console.error("File creation failed!", err); }
+      // Once the file exists on the server, start uploading
+      //myFiles.upload();
+    });
+      // Optional options here
+      // Optional callback here
+  },
+  updateFileParent: function (fileId, parent) {
+    // Always check method params!
+    check(fileId, Mongo.ObjectID);
+    check(parent, String);
+    // You'll probably want to do some kind of ownership check here...
+
+//    const update = myFiles.update;  // Server actually persists the update
+
+    // Use whichever function the environment dictates
+    myFiles.update({ _id: fileId }, {
+        $set: { 'metadata.parent': parent }
+      }
+      // Optional options here
+      // Optional callback here
+    );
+  },
+
   resetData() {
     let testData = {
       "QMS Category": {

@@ -25,13 +25,13 @@ function recursiveCopy(id, parent) {
   item.parent = parent;
   let newId = myFiles.insert(item);
 
-  myFiles.find({ parent: id }).forEach(function (item) {
+  myFiles.find({ 'metadata.parent': id }).forEach(function (item) {
     recursiveCopy(item._id, newId);
   });
 }
 
 function recursiveDelete(id) {
-  myFiles.find({ parent: id }).forEach(function (item) {
+  myFiles.find({ 'metadata.parent': id }).forEach(function (item) {
     recursiveDelete(item._id);
   });
   myFiles.remove(id);
@@ -65,6 +65,11 @@ Template.TreeData.viewmodel({
       selectAll: this.selectAll(),
       mapping: {
         text: 'filename',
+//        parent: function (item) {
+//          thisParent = myFiles.find({ filename: text }).metadata.parent;
+//          console.log("thisParent: " + thisParent);
+//          return thisParent;
+//        },
         aAttr: function (item) {
           return {
             title: item._id
@@ -74,13 +79,21 @@ Template.TreeData.viewmodel({
       jstree: { plugins },
       events: {
         changed(e, item, data) {
+          // item is an array of id
+          // File Collection requires the array to be in the form of a Meteor ObjectID
+          const fcId = item['0'];
+          console.log('item type: ' + typeof item);
+          console.log('fcId type: ' + typeof fcId);
+          console.log('data type: ' + typeof data);
           Session.set('selectedFile', data.item_data.filename);
-          console.log(data);
+          console.log('changed: ' + data);
           instance.message.set("Changing selection. " + item.length + " nodes are selected.");
         },
         create(e, item, data) {
           instance.message.set("Creating node on " + data.parent);
-          return myFiles.insert({ name: 'New node', parent: data.parent });
+//          return myFiles.insert({ name: 'New node', parent: data.parent });
+            console.log('create: ' + data);
+          return Meteor.call('insertFileParent', data.parent);
         },
         rename(e, item, data) {
           instance.message.set("Renaming " + item + " to " + data.text);
@@ -103,8 +116,10 @@ Template.TreeData.viewmodel({
             instance.message.set("Moving to the root is forbidden.");
             return false;
           }
+          console.log('move: ' + data);
           instance.message.set("Recursively moving nodes.");
-          myFiles.update(item, { $set: { parent: data.parent } });
+//          myFiles.update(item, { $set: { parent: data.parent } });
+          return Meteor.call('updateFileParent', item, data.parent);
         }
       }
     }
