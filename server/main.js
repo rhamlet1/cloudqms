@@ -17,13 +17,21 @@ Meteor.startup(() => {
   }
 
   TreeData.remove({});  // remove this line once server methods are defined
-  // Insert sample data if the TreeData collection is empty
-  // the sample data replicates the QMS website
+/  // Insert tree data if the TreeData collection is empty
+  // the data replicates the QMS website
+  let name = '';
+  let parent = '#';
+  TreeData.insert({name, parent});
+  myFiles.find({}).forEach((item) => {
+
+  }
+/*
   // complete except for the 'Standards' category
   if(TreeData.find().count() === 0) {
     Meteor.call("resetData");
     console.log("Filled collection TreeData");
   }
+*/
 
   Meteor.publish('allFiles',
     function (selectedFile) {

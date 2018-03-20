@@ -80,16 +80,21 @@ Template.TreeData.viewmodel({
         },
         create(e, item, data) {
           console.log('create item typeof: ' + typeof item);
+          console.log('create item : ' +  item);
+          // TreeView creates an array with an id of type String
+          // File Collection requires the id (item) to be in the form of a Meteor ObjectID
+//          const fcId = new Mongo.ObjectID(item);
+//          console.log('create fcId typeof: ' + typeof fcId);
           instance.message.set("Creating node on " + data.parent);
 //          return myFiles.insert({ name: 'New node', parent: data.parent });
-            console.log('create: ' + data);
+//            console.log('create: ' + data);
           return Meteor.call('insertFileParent', data.parent);
         },
         rename(e, item, data) {
           console.log('rename item typeof: ' + typeof item);
           const fcId = new Mongo.ObjectID(item);
           instance.message.set("Renaming " + fcId + " to " + data.text);
-          myFiles.update({ _id: fcId }, { $set: { filename: data.text } });
+          Meteor.call('renameFile', fcId, data.text);
         },
         delete(e, item, data) {
           console.log('delete item typeof: ' + typeof item);
@@ -110,6 +115,7 @@ Template.TreeData.viewmodel({
         move(e, item, data) {
 //          console.log('move item: ' + item);
           console.log('move item typeof: ' + typeof item);
+          console.log('move data.parent : ' + data.parent);
           const fcId = new Mongo.ObjectID(item);
           if (data.parent == '#') {
             instance.message.set("Moving to the root is forbidden.");

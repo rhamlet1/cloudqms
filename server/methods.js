@@ -49,7 +49,31 @@ Meteor.methods({
       // Optional callback here
     );
   },
-  
+
+  renameFile: function (fileId, filename) {
+    // Always check method params!
+    console.log('renameFile typeof fileId: ' + typeof fileId);
+    console.log('renameFile fileId: ' +  fileId);
+    console.log('renameFile typeof filename: ' + typeof filename);
+    check(fileId, Mongo.ObjectID);
+    check(filename, String);
+
+    // You'll probably want to do some kind of ownership check here...
+    // retrieve owner
+//    const update = myFiles.update;  // Server actually persists the update
+
+    // Use whichever function the environment dictates
+    myFiles.update({ _id: fileId }, {
+        $set: { filename: filename }
+      },
+      function (err, _id) {  // Callback to .insert
+        if (err) { return console.error("File rename failed!", err); }
+      }
+      // Optional options here
+      // Optional callback here
+    );
+  },
+
   recursiveCopy: function (id, parent) {
     let item = myFiles.findOne({ _id: id });
     delete item._id;
