@@ -2,8 +2,8 @@ ViewModel.share({
   options: {
     create: true,
     rename: true,
-    delete: true,
-    copy: true,
+    delete: false,
+    copy: false,
     move: true,
     dnd: true,
     contextmenu: true,
@@ -89,7 +89,7 @@ Template.TreeData.viewmodel({
           instance.message.set("Creating node on " + data.parent);
 //          return myFiles.insert({ name: 'New node', parent: data.parent });
 //            console.log('create: ' + data);
-          fileId = Meteor.call('insertFileParent', item, data.parent);
+          const fileId = Meteor.call('insertFileParent', data.parent);
           console.log('create fileId: ' + fileId);
           item._id = fileId;
         },
@@ -98,7 +98,7 @@ Template.TreeData.viewmodel({
           console.log('rename item: ' + item);
 //          const fcId = new Mongo.ObjectID(item);
           instance.message.set("Renaming " + item + " to " + data.text);
-          fileId = Meteor.call('renameFile', item, data.text);
+          const fileId = Meteor.call('renameFile', item, data.text);
           console.log('rename fileId: ' + fileId);
 //          item._id = fileId;
         },
@@ -112,8 +112,8 @@ Template.TreeData.viewmodel({
           console.log('copy item typeof: ' + typeof item);
 //          const fcId = new Mongo.ObjectID(item);
           if (data.parent == '#') {
-            instance.message.set("Copying to the root is forbidden.");
-            return false;
+            instance.message.set("Copying to the root.");
+//            return false;
           }
           instance.message.set("Recursively copying nodes.");
           Meteor.call('recursiveCopy', item, data.parent);
@@ -121,11 +121,14 @@ Template.TreeData.viewmodel({
         move(e, item, data) {
 //          console.log('move item: ' + item);
           console.log('move item typeof: ' + typeof item);
+          console.log('move item: ' + item);
+          console.log('move data typeof: ' + typeof data);
+          console.log('move data: ' + data);
 //          console.log('move data.parent : ' + data.parent);
 //          const fcId = new Mongo.ObjectID(item);
           if (data.parent == '#') {
-            instance.message.set("Moving to the root is forbidden.");
-            return false;
+            instance.message.set("Moving to the root.");
+//            return false;
           }
 //          console.log('move data: ' + data);
           instance.message.set("Recursively moving nodes.");

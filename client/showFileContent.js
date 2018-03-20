@@ -11,6 +11,7 @@ Template.showFileContent.onRendered(function () {
 Template.showFileContent.helpers({
   'fileUpload': function () {
     const selectedFile = Session.get('selectedFile');
+    console.log("fileUpload selectedFileId typeof: " + typeof selectedFile);
     const fcId = new Mongo.ObjectID(selectedFile);
     console.log("fileUpload selectedFileId: " + fcId);
     const mySelectedFile = myFiles.findOne({ _id: fcId });
@@ -19,6 +20,7 @@ Template.showFileContent.helpers({
   },
   'myFile': function () {
     const selectedFile = Session.get('selectedFile');
+    console.log("myFile selectedFileId typeof: " + typeof selectedFile);
     const fcId = new Mongo.ObjectID(selectedFile);
     console.log("myFile: " + fcId);
     const mySelectedFile = myFiles.findOne({ _id: fcId });
@@ -27,6 +29,7 @@ Template.showFileContent.helpers({
   },
   'contentType': function () {
     const selectedFile = Session.get('selectedFile');
+    console.log("contentType selectedFileId typeof: " + typeof selectedFile);
     const fcId = new Mongo.ObjectID(selectedFile);
     console.log("contentType selectedFileId: " + fcId);
     const mySelectedFile = myFiles.findOne({ _id: fcId });

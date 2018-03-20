@@ -1,15 +1,16 @@
 Meteor.methods({
   // Implement latency compensated update using Meteor methods and localUpdate
-  insertFileParent: function (item, parent) {
+  insertFileParent: function (parent) {
     // Always check method params!
 //    console.log('typeof parent: ' + typeof parent);
-    check(item, String);
     check(parent, String);
     // You'll probably want to do some kind of ownership check here...
-    const meteorId = Random.id();
-    const mongoId = new Meteor.ObjectID(meteorId);
-    console.log('insertFileParent meteorId: ' + meteorId);
+    const mongoId = new Mongo.ObjectID;
+    console.log('insertFileParent typeof mongoId: ' + typeof mongoId);
     console.log('insertFileParent mongoId: ' + mongoId);
+    const meteorId = mongoId._str;
+    console.log('insertFileParent typeof meteorId: ' + typeof meteorId);
+    console.log('insertFileParent meteorId: ' + meteorId);
     const newName = 'New node';
     // Use whichever function the environment dictates
     myFiles.insert({
@@ -50,6 +51,10 @@ Meteor.methods({
     console.log('updateFileParent fcId: ' +  fcId);
     check(fileId, String);
     check(parent, String);
+
+    if (parent === '#') {
+      parent = null;
+    }
 
     // You'll probably want to do some kind of ownership check here...
     // retrieve owner
@@ -112,7 +117,7 @@ Meteor.methods({
       );
 
       TreeData.update({ _id: fileId }, {
-          $set: { filename: filename }
+          $set: { name: filename }
         },
         function (err, _id) {  // Callback to .insert
           if (err) { return console.error("File TreeData rename failed!", err); }
@@ -127,6 +132,10 @@ Meteor.methods({
   recursiveCopy: function (fileId, parent) {
     check(fileId, String);
     check(parent, String);
+
+    if (parent === '#') {
+      parent = null;
+    }
 
     console.log('recursiveCopy typeof fileId: ' + typeof fileId);
     console.log('recursiveCopy fileId: ' +  fileId);
