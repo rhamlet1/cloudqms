@@ -1,26 +1,41 @@
 Meteor.methods({
   // Implement latency compensated update using Meteor methods and localUpdate
-  insertFileParent: function (parent) {
+  insertFileParent: function (item, parent) {
     // Always check method params!
-    console.log('typeof parent: ' + typeof parent);
+//    console.log('typeof parent: ' + typeof parent);
+    check(item, String);
     check(parent, String);
     // You'll probably want to do some kind of ownership check here...
-
+    const meteorId = Random.id();
+    const mongoId = new Meteor.ObjectID(meteorId);
+    console.log('insertFileParent meteorId: ' + meteorId);
+    console.log('insertFileParent mongoId: ' + mongoId);
+    const newName = 'New node';
     // Use whichever function the environment dictates
     myFiles.insert({
-      _id: new Meteor.Collection.ObjectID(),
-      filename: 'New node',
+      _id: mongoId,
+      filename: newName,
       contentType: '',
       metadata: { owner: Meteor.userId(), parent: parent },
       aliases: [ ]
     },
     function (err, _id) {  // Callback to .insert
-      if (err) { return console.error("File creation failed!", err); }
+      if (err) { return console.error("File myFiles creation failed!", err); }
       // Once the file exists on the server, start uploading
       //myFiles.upload();
     });
+
+    TreeData.insert({
+      _id: meteorId,
+      name: newName,
+      parent: parent
+    },
+    function (err, _id) {  // Callback to .insert
+      if (err) { return console.error("File TreeData creation failed!", err); }
+    });
       // Optional options here
       // Optional callback here
+    return meteorId;
   },
 
   updateFileParent: function (fileId, parent) {
@@ -28,68 +43,130 @@ Meteor.methods({
     console.log('updateFileParent typeof fileId: ' + typeof fileId);
     console.log('updateFileParent fileId: ' +  fileId);
     console.log('updateFileParent typeof parent: ' + typeof parent);
-    check(fileId, Mongo.ObjectID);
+    console.log('updateFileParent  parent: ' +  parent);
+    // convert String id to Mongo ObjectID
+    const fcId = new Mongo.ObjectID(fileId);
+    console.log('updateFileParent typeof fcId: ' + typeof fcId);
+    console.log('updateFileParent fcId: ' +  fcId);
+    check(fileId, String);
     check(parent, String);
 
     // You'll probably want to do some kind of ownership check here...
     // retrieve owner
-    const owner = myFiles.findOne({ _id: fileId }).metadata.owner;
+    const owner = myFiles.findOne({ _id: fcId }).metadata.owner;
     console.log('updateFileParent owner: ' + owner);
 
 //    const update = myFiles.update;  // Server actually persists the update
 
     // Use whichever function the environment dictates
-    myFiles.update({ _id: fileId }, {
+    myFiles.update({ _id: fcId }, {
         $set: { metadata: { owner: owner, parent: parent } }
       },
       function (err, _id) {  // Callback to .insert
-        if (err) { return console.error("File update failed!", err); }
+        if (err) { return console.error("File myFiles update failed!", err); }
       }
       // Optional options here
       // Optional callback here
     );
+
+    TreeData.update({ _id: fileId }, {
+        $set: { parent: parent }
+      },
+      function (err, _id) {  // Callback to .insert
+        if (err) { return console.error("File TreeData update failed!", err); }
+      }
+      // Optional options here
+      // Optional callback here
+    );
+
   },
 
   renameFile: function (fileId, filename) {
     // Always check method params!
+    check(fileId, String);
+    check(filename, String);
     console.log('renameFile typeof fileId: ' + typeof fileId);
     console.log('renameFile fileId: ' +  fileId);
     console.log('renameFile typeof filename: ' + typeof filename);
-    check(fileId, Mongo.ObjectID);
-    check(filename, String);
+    console.log('renameFile filename: ' + filename);
+//    if (filename === 'New node') {
+//      fileId = Random.id();
+//    }
+      // convert String id to Mongo ObjectID
+      const fcId = new Mongo.ObjectID(fileId);
+      console.log('renameFile typeof fcId: ' + typeof fcId);
+      console.log('renameFile fcId: ' +  fcId);
+      // You'll probably want to do some kind of ownership check here...
+      // retrieve owner
+  //    const update = myFiles.update;  // Server actually persists the update
 
-    // You'll probably want to do some kind of ownership check here...
-    // retrieve owner
-//    const update = myFiles.update;  // Server actually persists the update
+      // Use whichever function the environment dictates
+      myFiles.update({ _id: fcId }, {
+          $set: { filename: filename }
+        },
+        function (err, _id) {  // Callback to .insert
+          if (err) { return console.error("File myFiles rename failed!", err); }
+        }
+        // Optional options here
+        // Optional callback here
+      );
 
-    // Use whichever function the environment dictates
-    myFiles.update({ _id: fileId }, {
-        $set: { filename: filename }
-      },
-      function (err, _id) {  // Callback to .insert
-        if (err) { return console.error("File rename failed!", err); }
-      }
-      // Optional options here
-      // Optional callback here
-    );
+      TreeData.update({ _id: fileId }, {
+          $set: { filename: filename }
+        },
+        function (err, _id) {  // Callback to .insert
+          if (err) { return console.error("File TreeData rename failed!", err); }
+        }
+        // Optional options here
+        // Optional callback here
+      );
+      return fileId;
+  //  }
   },
 
-  recursiveCopy: function (id, parent) {
-    let item = myFiles.findOne({ _id: id });
+  recursiveCopy: function (fileId, parent) {
+    check(fileId, String);
+    check(parent, String);
+
+    console.log('recursiveCopy typeof fileId: ' + typeof fileId);
+    console.log('recursiveCopy fileId: ' +  fileId);
+    // convert String id to Mongo ObjectID
+    const fcId = new Mongo.ObjectID(fileId);
+    console.log('recursiveCopy typeof fcId: ' + typeof fcId);
+    console.log('recursiveCopy fcId: ' +  fcId);
+
+    let item = myFiles.findOne({ _id: fcId });
     delete item._id;
     item.metadata.parent = parent;
     let newId = myFiles.insert(item);
 
-    myFiles.find({ 'metadata.parent': id }).forEach(function (item) {
+    item = TreeData.findOne({ _id: fileId });
+    delete item._id;
+    item.parent = parent;
+    newId = TreeData.insert(item);
+
+    myFiles.find({ 'metadata.parent': fileId }).forEach(function (item) {
       recursiveCopy(item._id, newId);
     });
   },
 
-  recursiveDelete: function (id) {
-    myFiles.find({ 'metadata.parent': id }).forEach(function (item) {
+  recursiveDelete: function (fileId) {
+    check(fileId, String);
+
+    console.log('recursiveDelete typeof fileId: ' + typeof fileId);
+    console.log('recursiveDelete fileId: ' +  fileId);
+    // convert String id to Mongo ObjectID
+    const fcId = new Mongo.ObjectID(fileId);
+    console.log('recursiveCopy typeof fcId: ' + typeof fcId);
+    console.log('recursiveCopy fcId: ' +  fcId);
+
+    TreeData.find({ parent: fileId }).forEach(function (item) {
       recursiveDelete(item._id);
     });
-    myFiles.remove({ _id: id });
+
+    myFiles.remove({ _id: fcId });
+
+    TreeData.remove({ _id: fileId });
   },
 
 

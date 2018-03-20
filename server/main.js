@@ -16,15 +16,20 @@ Meteor.startup(() => {
     });
   }
 
+//  myFiles.remove({});  // remove this line once server methods are defined
   TreeData.remove({});  // remove this line once server methods are defined
-/  // Insert tree data if the TreeData collection is empty
+  // Insert tree data if the TreeData collection is empty
   // the data replicates the QMS website
   let name = '';
   let parent = '#';
-  TreeData.insert({name, parent});
+  TreeData.insert({ name, parent });
   myFiles.find({}).forEach((item) => {
-
-  }
+    thisId = item._id._str;
+    thisName = item.filename;
+    thisParent = item.metadata.parent;
+    console.log('id, name, parent: ' + thisId + ', ' + thisName + ', ' + thisParent);
+    TreeData.insert({ _id: thisId, name: thisName, parent: thisParent });
+  });
 /*
   // complete except for the 'Standards' category
   if(TreeData.find().count() === 0) {
