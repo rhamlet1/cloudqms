@@ -1,0 +1,23 @@
+<template name="dragArea">
+  <div class='wrapper'>
+    <div class='container-fluid'>
+      <div class="row">
+
+        <div class="col-sm-12">
+          <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">
+              <h4 class="panel-title">Drop here</h4>
+            </div>
+            <div class="fileDrop panel-body">
+              {{#each myData}}
+                <li class="fileName">{{filename}}</li>
+              {{/each}}
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</template>

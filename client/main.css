@@ -1,3 +1,7 @@
 .panel-body  {
-   word-break: break-all
+  word-break: break-all;
+}
+
+.fileBrowse .fileDrop {
+  width: auto;
 }

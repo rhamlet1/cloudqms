@@ -16,7 +16,7 @@
         <div class="container-fluid">
           {{> yield region="nav"}}
           <div class="row">
-            <div class="col-sm-4">
+            <div class="col-sm-6">
               <div class="panel panel-default">
                 <!-- Default panel contents -->
                 <div class="panel-heading">
@@ -27,7 +27,7 @@
                 </div>
               </div>
             </div>
-            <div class="col-sm-8">
+            <div class="col-sm-6">
               <div class="panel panel-default">
                 <!-- Default panel contents -->
                 <div class="panel-heading">
@@ -47,50 +47,61 @@
 </template>
 
 <template name="qmsTree">
-  <!-- display the QMS file structure using TreeView package-->
-  {{> TreeView treeArgs}}
+  <!-- display the QMS file structure using TreeView package
+  {{> TreeView treeArgs}}-->
+  {{> TreeData options}}
 </template>
 
-<template name="structures">
-  <!--
-  {{categories}}
-  <ul>
-    {{#each structure}}
-      {{> structureItem}}
-    {{/each}}
-  </ul>
-  <ul>
-      {{categories}}
-  </ul>
--->
-  <!-- display a drop-down menu containing a list of QMS categories
-  <select class="form-control" id="contactSelect" name="contactSelect">
-      {{{categories}}}
-  </select> -->
-
-  <h1>Content goes here</h1>
+<template name="home">
+  {{> showFileContent}}
 </template>
-
-<!--
-<template name="structureItem">
-  <li>{{namePath}}</li>
-</template>
--->
 
 <template name="myNav">
 <!-- Bootstrap 3.3 style -->
   <nav class="navbar navbar-default">
     <div class="container-fluid">
       <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+        </button>
+        <a class="navbar-brand" href="/">
+          <span class="glyphicon glyphicon-home" aria-hidden="true" title="Home"></span>
+        </a>
       </div>
 
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+<!--          {{#if isInRole 'administrator'}} -->
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="{{pathFor route='dragArea'}}">Add pdf files</a></li>
+<!--
+                <li role="separator" class="divider"></li>
+                <li><a href="{{pathFor route='manageRoles'}}">Manage roles</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="{{pathFor route='viewActivityLog'}}">View activity log</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="{{pathFor route='registeredUsers'}}">Registered users</a></li>
+-->
+              </ul>
+            </li>
+<!--          {{/if}} -->
+        </ul>
         <ul class="nav navbar-nav navbar-right">
-          This is the nav bar
-          <!--
+<!--
           {{> loginButtons align="right"}}
-        -->
+-->
+          {{#if currentUser}}
+            <li>
+              <a href="#" class="logout"><span class="logout glyphicon glyphicon-log-out" aria-hidden="true" title="Logout"></span></a>
+            </li>
+          {{else}}
+            <li>
+              <a href="{{pathFor route='login'}}"><span class="login glyphicon glyphicon-log-in" aria-hidden="true" title="Login"></span></a>
+            </li>
+          {{/if}}
         </ul>
       </div>
     </div>
