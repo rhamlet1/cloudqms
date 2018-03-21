@@ -3,7 +3,20 @@ import { ReactiveVar } from 'meteor/reactive-var';
 
 Structures = new Mongo.Collection('structures');
 
-Template.structures.helpers({
+Template.main.helpers({
+  currentUser: () => Meteor.userId(),
+});
+
+Template.myNav.events({
+  'click .logout': (event) => {
+    event.preventDefault();
+    Meteor.logout(function(err){
+      console.log(err);
+    });
+  },
+});
+
+Template.home.helpers({
   'structure': function(){
       return Structures.find({}, { sort: { 'namePath.0': 1 } });
   },
@@ -25,12 +38,13 @@ Template.structures.helpers({
   },
 });
 
+/*
 Template.qmsTree.helpers({
   'treeArgs': {
-    collection: TreeData,
-    subscription: 'TreeData',
+    collection: myFiles,
+    subscription: 'allFiles',
     mapping: {
-      text: 'name',
+      text: 'filename',
       aAttr: function (item) {
         return {
           title: item._id
@@ -38,9 +52,89 @@ Template.qmsTree.helpers({
       }
     },
     events: {
-      changed: function(e, item) {
-        console.log("Item " + item + "selected.");
+      changed: function(e, item, data) {
+        Session.set('selectedFile', data.item_data.filename);
+        console.log("Item " + item + " selected.");
+        console.log("Item " + data.item_data.filename + " selected.");
+      },
+      create(e, item, data) {
+        instance.message.set("Creating node on " + data.parent);
+        return myFiles.insert({ name: 'New node', parent: data.parent });
+      },
+      rename(e, item, data) {
+        instance.message.set("Renaming " + item + " to " + data.text);
+        myFiles.update(item, { $set: { name: data.text } });
+      },
+      delete(e, item, data) {
+        instance.message.set("Deleting " + item);
+        recursiveDelete(item);
+      },
+      copy(e, item, data) {
+        if (data.parent == '#') {
+          instance.message.set("Copying to the root is forbidden.");
+          return false;
+        }
+        return instance.message.set("Recursively copying nodes.");
+        recursiveCopy(item, data.parent);
+      },
+      move(e, item, data) {
+        if (data.parent == '#') {
+          instance.message.set("Moving to the root is forbidden.");
+          return false;
+        }
+        instance.message.set("Recursively moving nodes.");
+        myFiles.update(item, { $set: { parent: data.parent } });
       }
     }
   }
+});
+*/
+
+$.validator.setDefaults({
+  rules: {
+    // login, register
+    email: {
+      required: true,
+      email: true,
+    },
+    password: {
+      required: true,
+      minlength: 6,
+    },
+    forename: {
+      required: true,
+    },
+    surname: {
+      required: true,
+    },
+    jobTitle: {
+      required: true,
+    },
+    company: {
+      required: true,
+    },
+  },
+  messages: {
+    // login, register
+    email: {
+      required: 'You must enter a valid email address.',
+      email: 'You have entered an invalid email address.',
+    },
+    password: {
+      required: 'You must enter your password.',
+      minlength: 'The password must be a minimum of {0} characters.',
+    },
+    forename: {
+      required: 'You must enter your first name.',
+    },
+    surname: {
+      required: 'You must enter your family name.',
+    },
+    jobTitle: {
+      required: 'You must enter your company position.',
+    },
+    company: {
+      required: 'You must enter your organisation name.',
+    },
+  },
 });

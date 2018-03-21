@@ -1,4 +1,184 @@
 Meteor.methods({
+  // Implement latency compensated update using Meteor methods and localUpdate
+  insertFileParent: function (parent) {
+    // Always check method params!
+//    console.log('typeof parent: ' + typeof parent);
+    check(parent, String);
+    // You'll probably want to do some kind of ownership check here...
+    const mongoId = new Mongo.ObjectID;
+    console.log('insertFileParent typeof mongoId: ' + typeof mongoId);
+    console.log('insertFileParent mongoId: ' + mongoId);
+    const meteorId = mongoId._str;
+    console.log('insertFileParent typeof meteorId: ' + typeof meteorId);
+    console.log('insertFileParent meteorId: ' + meteorId);
+    const newName = 'New node';
+    // Use whichever function the environment dictates
+    myFiles.insert({
+      _id: mongoId,
+      filename: newName,
+      contentType: '',
+      metadata: { owner: Meteor.userId(), parent: parent },
+      aliases: [ ]
+    },
+    function (err, _id) {  // Callback to .insert
+      if (err) { return console.error("File myFiles creation failed!", err); }
+      // Once the file exists on the server, start uploading
+      //myFiles.upload();
+    });
+
+    TreeData.insert({
+      _id: meteorId,
+      name: newName,
+      parent: parent
+    },
+    function (err, _id) {  // Callback to .insert
+      if (err) { return console.error("File TreeData creation failed!", err); }
+    });
+      // Optional options here
+      // Optional callback here
+    return meteorId;
+  },
+
+  updateFileParent: function (fileId, parent) {
+    // Always check method params!
+    console.log('updateFileParent typeof fileId: ' + typeof fileId);
+    console.log('updateFileParent fileId: ' +  fileId);
+    console.log('updateFileParent typeof parent: ' + typeof parent);
+    console.log('updateFileParent  parent: ' +  parent);
+    // convert String id to Mongo ObjectID
+    const fcId = new Mongo.ObjectID(fileId);
+    console.log('updateFileParent typeof fcId: ' + typeof fcId);
+    console.log('updateFileParent fcId: ' +  fcId);
+    check(fileId, String);
+    check(parent, String);
+
+    if (parent === '#') {
+      parent = null;
+    }
+
+    // You'll probably want to do some kind of ownership check here...
+    // retrieve owner
+    const owner = myFiles.findOne({ _id: fcId }).metadata.owner;
+    console.log('updateFileParent owner: ' + owner);
+
+//    const update = myFiles.update;  // Server actually persists the update
+
+    // Use whichever function the environment dictates
+    myFiles.update({ _id: fcId }, {
+        $set: { metadata: { owner: owner, parent: parent } }
+      },
+      function (err, _id) {  // Callback to .insert
+        if (err) { return console.error("File myFiles update failed!", err); }
+      }
+      // Optional options here
+      // Optional callback here
+    );
+
+    TreeData.update({ _id: fileId }, {
+        $set: { parent: parent }
+      },
+      function (err, _id) {  // Callback to .insert
+        if (err) { return console.error("File TreeData update failed!", err); }
+      }
+      // Optional options here
+      // Optional callback here
+    );
+
+  },
+
+  renameFile: function (fileId, filename) {
+    // Always check method params!
+    check(fileId, String);
+    check(filename, String);
+    console.log('renameFile typeof fileId: ' + typeof fileId);
+    console.log('renameFile fileId: ' +  fileId);
+    console.log('renameFile typeof filename: ' + typeof filename);
+    console.log('renameFile filename: ' + filename);
+//    if (filename === 'New node') {
+//      fileId = Random.id();
+//    }
+      // convert String id to Mongo ObjectID
+      const fcId = new Mongo.ObjectID(fileId);
+      console.log('renameFile typeof fcId: ' + typeof fcId);
+      console.log('renameFile fcId: ' +  fcId);
+      // You'll probably want to do some kind of ownership check here...
+      // retrieve owner
+  //    const update = myFiles.update;  // Server actually persists the update
+
+      // Use whichever function the environment dictates
+      myFiles.update({ _id: fcId }, {
+          $set: { filename: filename }
+        },
+        function (err, _id) {  // Callback to .insert
+          if (err) { return console.error("File myFiles rename failed!", err); }
+        }
+        // Optional options here
+        // Optional callback here
+      );
+
+      TreeData.update({ _id: fileId }, {
+          $set: { name: filename }
+        },
+        function (err, _id) {  // Callback to .insert
+          if (err) { return console.error("File TreeData rename failed!", err); }
+        }
+        // Optional options here
+        // Optional callback here
+      );
+      return fileId;
+  //  }
+  },
+
+  recursiveCopy: function (fileId, parent) {
+    check(fileId, String);
+    check(parent, String);
+
+    if (parent === '#') {
+      parent = null;
+    }
+
+    console.log('recursiveCopy typeof fileId: ' + typeof fileId);
+    console.log('recursiveCopy fileId: ' +  fileId);
+    // convert String id to Mongo ObjectID
+    const fcId = new Mongo.ObjectID(fileId);
+    console.log('recursiveCopy typeof fcId: ' + typeof fcId);
+    console.log('recursiveCopy fcId: ' +  fcId);
+
+    let item = myFiles.findOne({ _id: fcId });
+    delete item._id;
+    item.metadata.parent = parent;
+    let newId = myFiles.insert(item);
+
+    item = TreeData.findOne({ _id: fileId });
+    delete item._id;
+    item.parent = parent;
+    newId = TreeData.insert(item);
+
+    myFiles.find({ 'metadata.parent': fileId }).forEach(function (item) {
+      recursiveCopy(item._id, newId);
+    });
+  },
+
+  recursiveDelete: function (fileId) {
+    check(fileId, String);
+
+    console.log('recursiveDelete typeof fileId: ' + typeof fileId);
+    console.log('recursiveDelete fileId: ' +  fileId);
+    // convert String id to Mongo ObjectID
+    const fcId = new Mongo.ObjectID(fileId);
+    console.log('recursiveCopy typeof fcId: ' + typeof fcId);
+    console.log('recursiveCopy fcId: ' +  fcId);
+
+    TreeData.find({ parent: fileId }).forEach(function (item) {
+      recursiveDelete(item._id);
+    });
+
+    myFiles.remove({ _id: fcId });
+
+    TreeData.remove({ _id: fileId });
+  },
+
+
   resetData() {
     let testData = {
       "QMS Category": {
@@ -370,5 +550,75 @@ Meteor.methods({
 
     TreeData.remove({});
     insertTestData(null, testData);
-  }
+  },
+  addUser(email, password, forename, surname,jobTitle, company) {
+    var existing = Meteor.users.findOne({'emails.0.address': email});
+    if (!existing) {
+      Accounts.createUser({
+        email: email,
+        password: password,
+        profile: {
+          forename,
+          surname,
+          jobTitle,
+          company,
+        }
+/*      }, (error) => {
+        if (error) {
+          if (error.reason === 'Email already exists.') {
+            validator.showErrors({
+              email: 'That email address is already registered.'
+            });
+            const userEmail = $('[name=email]').val();
+//              logActivity(
+//                '',
+//                'Users',
+//                userEmail,
+//                'Attempt to register account using existing email address.'
+//              );
+            console.log("User account already exists");
+          }
+          console.log("Error: " + error);
+        } else {
+          const currentUser = Meteor.userId();
+          if (currentUser) {
+//              const activity = 'Account created for user ' + getUserName() + '.';
+//              logActivity(
+//                currentUser,
+//                'Users',
+//                currentUser,
+//                activity,
+//              );
+//              sendEmailToAdmin(
+//                Meteor.user().emails[0].address,
+//                'Registration notification',
+//                getUserName() + ' requests roles to be set up.'
+//              );
+//              insertUserActionsTable(Meteor.userId());
+//              insertUserContactsTable(Meteor.userId());
+//              insertUserContactsParams(Meteor.userId());
+            console.log("User account created");
+          } else {
+            const userEmail = $('[name=email]').val();
+//              logActivity(
+//                '',
+//                'Users',
+//                userEmail,
+//                'Attempted account registration failed.',
+//              );
+            console.log("User account creation failed");
+          }
+          Router.go('home');
+        }
+*/
+      });
+    }
+/*
+    Meteor.users.remove({});
+    Meteor.users.insert({
+      email: "rhamlet@hdcl.co.uk",
+      password: "cloudqms"
+    });
+    */
+  },
 })
