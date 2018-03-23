@@ -12,28 +12,37 @@ Template.showFileContent.helpers({
   'fileUpload': function () {
     const selectedFile = Session.get('selectedFile');
     console.log("fileUpload selectedFileId typeof: " + typeof selectedFile);
-    const fcId = new Mongo.ObjectID(selectedFile);
-    console.log("fileUpload selectedFileId: " + fcId);
-    const mySelectedFile = myFiles.findOne({ _id: fcId });
-    console.log("fileUpload selectedFileName: " + mySelectedFile.filename);
-    return mySelectedFile.filename;
+    if (selectedFile !== '') {
+      const fcId = new Mongo.ObjectID(selectedFile);
+  //    console.log("fileUpload selectedFileId: " + fcId);
+      const mySelectedFile = myFiles.findOne({ _id: fcId });
+      if (!mySelectedFile) return;
+//     console.log("fileUpload selectedFileName: " + mySelectedFile);
+      return mySelectedFile.filename;
+    }
   },
   'myFile': function () {
     const selectedFile = Session.get('selectedFile');
-    console.log("myFile selectedFileId typeof: " + typeof selectedFile);
-    const fcId = new Mongo.ObjectID(selectedFile);
-    console.log("myFile: " + fcId);
-    const mySelectedFile = myFiles.findOne({ _id: fcId });
-    console.log("myFile mySelectedFile: " + myFiles.baseURL + '/' + mySelectedFile.md5);
-    return myFiles.baseURL + '/' + mySelectedFile.md5;
+//    console.log("myFile selectedFileId typeof: " + typeof selectedFile);
+    if (selectedFile !== '') {
+      const fcId = new Mongo.ObjectID(selectedFile);
+  //    console.log("myFile: " + fcId);
+      const mySelectedFile = myFiles.findOne({ _id: fcId });
+      if (!mySelectedFile) return;
+  //    console.log("myFile mySelectedFile: " + myFiles.baseURL + '/' + mySelectedFile.md5);
+      return myFiles.baseURL + '/' + mySelectedFile.md5;
+    }
   },
   'contentType': function () {
     const selectedFile = Session.get('selectedFile');
-    console.log("contentType selectedFileId typeof: " + typeof selectedFile);
-    const fcId = new Mongo.ObjectID(selectedFile);
-    console.log("contentType selectedFileId: " + fcId);
-    const mySelectedFile = myFiles.findOne({ _id: fcId });
-    console.log("contentType selectedContentType: " + mySelectedFile.contentType);
-    return mySelectedFile.contentType;
+//    console.log("contentType selectedFileId typeof: " + typeof selectedFile);
+    if (selectedFile !== '') {
+      const fcId = new Mongo.ObjectID(selectedFile);
+  //    console.log("contentType selectedFileId: " + fcId);
+      const mySelectedFile = myFiles.findOne({ _id: fcId });
+      if (!mySelectedFile) return;
+  //    console.log("contentType selectedContentType: " + mySelectedFile.contentType);
+      return mySelectedFile.contentType;
+    }
   },
 });
