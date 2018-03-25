@@ -61,7 +61,9 @@ Template.TreeData.viewmodel({
           if (extension === "") {
             return 'icons/folder.png';
           } else if (extension === "txt") {
-            return 'icons/txt.png';
+            return 'icons/doc.png';
+          } else if (extension === "js") {
+            return 'icons/js.png';
           } else if (extension === "pdf") {
             return 'icons/pdf.png';
           } else if (extension === "doc" ||
@@ -80,7 +82,6 @@ Template.TreeData.viewmodel({
           } else {
             return;
           }
-
         }
       },
       jstree: { plugins },
