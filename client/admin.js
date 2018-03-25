@@ -32,9 +32,12 @@ Template.dragArea.events({
 // When a file is added via drag and drop
 myFiles.resumable.on('fileAdded', function (file) {
 
+  const fileId = file.uniqueIdentifier;  // This is the ID resumable will use
+  console.log('fileId typeof: ' + typeof fileId);
+  console.log('fileId: ' + fileId);
   // Create a new file in the file collection to upload
   myFiles.insert({
-    _id: file.uniqueIdentifier,  // This is the ID resumable will use
+    _id: fileId,
     filename: file.fileName,
     contentType: file.file.type
     },
@@ -44,6 +47,13 @@ myFiles.resumable.on('fileAdded', function (file) {
       myFiles.resumable.upload();
     }
   );
+
+  TreeData.insert({
+    _id: fileId,
+    name: file.fileName,
+    parent: null
+  });
+
 });
 
 // This autorun keeps a cookie up-to-date with the Meteor Auth token
