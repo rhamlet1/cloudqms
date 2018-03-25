@@ -2,17 +2,15 @@ Meteor.methods({
   // Implement latency compensated update using Meteor methods and localUpdate
   insertFileParent: function (parent) {
     // Always check method params!
-//    console.log('typeof parent: ' + typeof parent);
     check(parent, String);
     // You'll probably want to do some kind of ownership check here...
+
+    // Generate a new id of type object
     const mongoId = new Mongo.ObjectID;
-    console.log('insertFileParent typeof mongoId: ' + typeof mongoId);
-    console.log('insertFileParent mongoId: ' + mongoId);
+    // Extract the id String from the object to use as the Meteor id in TreeView
     const meteorId = mongoId._str;
-    console.log('insertFileParent typeof meteorId: ' + typeof meteorId);
-    console.log('insertFileParent meteorId: ' + meteorId);
     const newName = 'New node';
-    // Use whichever function the environment dictates
+    // Add the new node to the myFiles file collection
     myFiles.insert({
       _id: mongoId,
       filename: newName,
@@ -26,6 +24,7 @@ Meteor.methods({
       //myFiles.upload();
     });
 
+    // Add the new node to the TreeData collection
     TreeData.insert({
       _id: meteorId,
       name: newName,
@@ -41,43 +40,39 @@ Meteor.methods({
 
   updateFileParent: function (fileId, parent) {
     // Always check method params!
-    console.log('updateFileParent typeof fileId: ' + typeof fileId);
-    console.log('updateFileParent fileId: ' +  fileId);
-    console.log('updateFileParent typeof parent: ' + typeof parent);
-    console.log('updateFileParent  parent: ' +  parent);
-    // convert String id to Mongo ObjectID
-    const fcId = new Mongo.ObjectID(fileId);
-    console.log('updateFileParent typeof fcId: ' + typeof fcId);
-    console.log('updateFileParent fcId: ' +  fcId);
+    console.log('update parent: ' + parent)
     check(fileId, String);
     check(parent, String);
 
+    // convert Meteor String id to Mongo ObjectID
+    const fcId = new Mongo.ObjectID(fileId);
+
+    // Check whether dragging node to the root
     if (parent === '#') {
       parent = null;
     }
 
     // You'll probably want to do some kind of ownership check here...
-    // retrieve owner
+
+    // retrieve owner to use in the metadata update function
     const owner = myFiles.findOne({ _id: fcId }).metadata.owner;
-    console.log('updateFileParent owner: ' + owner);
 
-//    const update = myFiles.update;  // Server actually persists the update
-
-    // Use whichever function the environment dictates
+    // Update the node in the myFiles file collection
     myFiles.update({ _id: fcId }, {
         $set: { metadata: { owner: owner, parent: parent } }
       },
-      function (err, _id) {  // Callback to .insert
+      function (err, _id) {  // Callback to .update
         if (err) { return console.error("File myFiles update failed!", err); }
       }
       // Optional options here
       // Optional callback here
     );
 
+    // Update the node in the TreeData collection
     TreeData.update({ _id: fileId }, {
         $set: { parent: parent }
       },
-      function (err, _id) {  // Callback to .insert
+      function (err, _id) {  // Callback to .update
         if (err) { return console.error("File TreeData update failed!", err); }
       }
       // Optional options here
@@ -90,94 +85,56 @@ Meteor.methods({
     // Always check method params!
     check(fileId, String);
     check(filename, String);
-    console.log('renameFile typeof fileId: ' + typeof fileId);
-    console.log('renameFile fileId: ' +  fileId);
-    console.log('renameFile typeof filename: ' + typeof filename);
-    console.log('renameFile filename: ' + filename);
-//    if (filename === 'New node') {
-//      fileId = Random.id();
-//    }
-      // convert String id to Mongo ObjectID
-      const fcId = new Mongo.ObjectID(fileId);
-      console.log('renameFile typeof fcId: ' + typeof fcId);
-      console.log('renameFile fcId: ' +  fcId);
-      // You'll probably want to do some kind of ownership check here...
-      // retrieve owner
-  //    const update = myFiles.update;  // Server actually persists the update
 
-      // Use whichever function the environment dictates
-      myFiles.update({ _id: fcId }, {
-          $set: { filename: filename }
-        },
-        function (err, _id) {  // Callback to .insert
-          if (err) { return console.error("File myFiles rename failed!", err); }
-        }
-        // Optional options here
-        // Optional callback here
-      );
+    // convert Meteor String id to Mongo ObjectID
+    const fcId = new Mongo.ObjectID(fileId);
 
-      TreeData.update({ _id: fileId }, {
-          $set: { name: filename }
-        },
-        function (err, _id) {  // Callback to .insert
-          if (err) { return console.error("File TreeData rename failed!", err); }
-        }
-        // Optional options here
-        // Optional callback here
-      );
-      return fileId;
-  //  }
+    // You'll probably want to do some kind of ownership check here...
+
+    // Use whichever function the environment dictates
+    myFiles.update({ _id: fcId }, {
+        $set: { filename: filename }
+      },
+      function (err, _id) {  // Callback to .update
+        if (err) { return console.error("File myFiles rename failed!", err); }
+      }
+      // Optional options here
+      // Optional callback here
+    );
+
+    TreeData.update({ _id: fileId }, {
+        $set: { name: filename }
+      },
+      function (err, _id) {  // Callback to .update
+        if (err) { return console.error("File TreeData rename failed!", err); }
+      }
+      // Optional options here
+      // Optional callback here
+    );
+    return fileId;
   },
 
-  recursiveCopy: function (fileId, parent) {
-    check(fileId, String);
+  copyNode: function (fileId, parent) {
+    console.log('recursiveCopy typeof fileId: ' + typeof fileId);
+    console.log('recursiveCopy fileId: ' +  fileId);
+    console.log('recursiveCopy typeof parent: ' + typeof parent);
+    console.log('recursiveCopy parent: ' +  parent);
+    check(fileId, String);  // 24 character hexadecimal string id
     check(parent, String);
 
+    // Check whether copying node to the root
     if (parent === '#') {
       parent = null;
     }
 
-    console.log('recursiveCopy typeof fileId: ' + typeof fileId);
-    console.log('recursiveCopy fileId: ' +  fileId);
-    // convert String id to Mongo ObjectID
-    const fcId = new Mongo.ObjectID(fileId);
-    console.log('recursiveCopy typeof fcId: ' + typeof fcId);
-    console.log('recursiveCopy fcId: ' +  fcId);
-
-    let item = myFiles.findOne({ _id: fcId });
-    delete item._id;
-    item.metadata.parent = parent;
-    let newId = myFiles.insert(item);
-
-    item = TreeData.findOne({ _id: fileId });
-    delete item._id;
-    item.parent = parent;
-    newId = TreeData.insert(item);
-
-    myFiles.find({ 'metadata.parent': fileId }).forEach(function (item) {
-      recursiveCopy(item._id, newId);
-    });
+    recursiveCopy(fileId, parent);
   },
 
-  recursiveDelete: function (fileId) {
+  deleteNode: function (fileId) {
     check(fileId, String);
 
-    console.log('recursiveDelete typeof fileId: ' + typeof fileId);
-    console.log('recursiveDelete fileId: ' +  fileId);
-    // convert String id to Mongo ObjectID
-    const fcId = new Mongo.ObjectID(fileId);
-    console.log('recursiveCopy typeof fcId: ' + typeof fcId);
-    console.log('recursiveCopy fcId: ' +  fcId);
-
-    TreeData.find({ parent: fileId }).forEach(function (item) {
-      recursiveDelete(item._id);
-    });
-
-    myFiles.remove({ _id: fcId });
-
-    TreeData.remove({ _id: fileId });
+    recursiveDelete(fileId);
   },
-
 
   resetData() {
     let testData = {
@@ -621,4 +578,75 @@ Meteor.methods({
     });
     */
   },
-})
+});
+
+function recursiveCopy(fileId, parent) {
+  // Generate a hexadecimal object id
+  // This is to be used as the id in the new myFiles and TreeData nodes
+  // as we don't want Mongo to generate a different id in each collection
+  const fcNewId = new Mongo.ObjectID();
+//  console.log('recursiveCopy typeof fcNewId: ' + typeof fcNewId);
+//  console.log('recursiveCopy fcNewId: ' +  fcNewId);
+  const newId = fcNewId._str;
+//  console.log('recursiveCopy typeof newId: ' + typeof newId);
+  console.log('recursiveCopy newId: ' +  newId);
+  // first iteration copies the selected node
+  // subsequent iterations copy across child getNodes
+  // keep myFiles file-collection and TreeData collection in sync
+  // retrieve the document which is to be copied
+  let item = TreeData.findOne({ _id: fileId });
+  // replace original id with new hexadecimal id
+  item._id = newId;
+//  console.log('recursiveCopy typeof item._id: ' + typeof item._id);
+  console.log('recursiveCopy item._id: ' +  item._id);
+  // reset the parent value to the parent of the node where the copy is to be pasted
+  item.parent = parent;
+  // inserting the item will automatically regenerate a new id
+  TreeData.insert(item);  // 17 character non-hexadecimal id
+
+  // convert node to copy Meteor String id to Mongo ObjectID
+  const fcId = new Mongo.ObjectID(fileId);
+//  console.log('recursiveCopy typeof fcId: ' + typeof fcId);
+  console.log('recursiveCopy fcId: ' +  fcId);
+
+  // retrieve the document which is to be copied
+  item = myFiles.findOne({ _id: fcId });
+  // replace original id new id synced across TreeData and myFiles
+  item._id._str = newId;
+//  console.log('recursiveCopy typeof item._id._str: ' + typeof item._id._str);
+  console.log('recursiveCopy item._id._str: ' +  item._id._str);
+  console.log('recursiveCopy item.md5: ' +  item.md5);
+  item.metadata.parent = parent;
+  myFiles.insert(item);
+
+  // this routine copies the selected node and all its child nodes
+  // retrieve children of the copied node and copy to new node
+  // on each iteration of the recursive copy, copy the childrens' children
+  TreeData.find({ parent: fileId }).forEach(function (item) {
+    console.log('recursiveCopy typeof item._id: ' + typeof item._id);
+    console.log('recursiveCopy item._id: ' +  item._id);
+    console.log('recursiveCopy typeof fcNewId._str: ' + typeof fcNewId._str);
+    console.log('recursiveCopy fcNewId._str: ' +  fcNewId._str);
+    recursiveCopy(item._id, newId);
+  });
+}
+
+function recursiveDelete(fileId) {
+  check(fileId, String);
+
+  // first iteration deletes the selected node
+  // subsequent iterations delete child nodes
+  // keep myFiles file-collection and TreeData collection in sync
+  // retrieve the document which is to be deleted
+  TreeData.remove({ _id: fileId });
+
+  // convert Meteor String id to Mongo ObjectID
+  const fcId = new Mongo.ObjectID(fileId);
+  fcId._str = fileId;
+
+  myFiles.remove({ _id: fcId });
+
+  TreeData.find({ parent: fileId }).forEach(function (item) {
+    recursiveDelete(item._id);
+  });
+}
