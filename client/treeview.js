@@ -51,6 +51,36 @@ Template.TreeData.viewmodel({
           return {
             title: item._id
           };
+
+        },
+        icon: function (text) {
+          console.log('text: ' + text);
+          const fname = text.name;
+          const extension = fname.slice((fname.lastIndexOf(".") - 1 >>> 0) + 2);
+          console.log('extension: ' + extension);
+          if (extension === "") {
+            return 'icons/folder.png';
+          } else if (extension === "txt") {
+            return 'icons/txt.png';
+          } else if (extension === "pdf") {
+            return 'icons/pdf.png';
+          } else if (extension === "doc" ||
+                    extension === "docx") {
+            return 'icons/word.png';
+          } else if (extension === "xls" ||
+                    extension === "xlsx") {
+            return 'icons/excel.png';
+          } else if (extension === "jpg" ||
+                    extension === "jpeg" ||
+                    extension === "png" ||
+                    extension === "gif") {
+            return 'icons/image.png';
+          } else if (extension === "ppt") {
+            return 'icons/presentation.png';
+          } else {
+            return;
+          }
+
         }
       },
       jstree: { plugins },
