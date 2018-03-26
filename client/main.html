@@ -15,30 +15,7 @@
       <div id="page-content-wrapper">
         <div class="container-fluid">
           {{> yield region="nav"}}
-          <div class="row">
-            <div class="col-sm-6">
-              <div class="panel panel-default">
-                <!-- Default panel contents -->
-                <div class="panel-heading">
-                  <h4 class="panel-title">QMS Structure</h4>
-                </div>
-                <div class="panel-body">
-                  {{> yield region="tree"}}
-                </div>
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="panel panel-default">
-                <!-- Default panel contents -->
-                <div class="panel-heading">
-                  <h4 class="panel-title">QMS Contents</h4>
-                </div>
-                <div class="panel-body">
-                  {{> yield}}
-                </div>
-              </div>
-            </div>
-          </div>
+          {{> yield}}
           {{> yield region="footer"}}
         </div>
       </div>
@@ -53,7 +30,30 @@
 </template>
 
 <template name="home">
-  {{> showFileContent}}
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">
+          <h4 class="panel-title">QMS Structure</h4>
+        </div>
+        <div class="panel-body">
+          {{> yield region="tree"}}
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">
+          <h4 class="panel-title">QMS Contents</h4>
+        </div>
+        <div class="panel-body">
+          {{> showFileContent}}
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <template name="myNav">
@@ -72,22 +72,22 @@
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-<!--          {{#if isInRole 'administrator'}} -->
+          {{#if isInRole 'administrator'}}
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
               <ul class="dropdown-menu">
-                <li><a href="{{pathFor route='dragArea'}}">Add pdf files</a></li>
-<!--
+                <li><a href="{{pathFor route='dragArea'}}">Add files</a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="{{pathFor route='manageRoles'}}">Manage roles</a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="{{pathFor route='viewActivityLog'}}">View activity log</a></li>
+<!--
                 <li role="separator" class="divider"></li>
                 <li><a href="{{pathFor route='registeredUsers'}}">Registered users</a></li>
 -->
               </ul>
             </li>
-<!--          {{/if}} -->
+          {{/if}}
         </ul>
         <ul class="nav navbar-nav navbar-right">
 <!--

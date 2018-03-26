@@ -1,0 +1,162 @@
+<template name="dragArea">
+  <div class='wrapper'>
+    <div class='container-fluid'>
+      <div class="row">
+
+        <div class="col-sm-12">
+          <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">
+              <h4 class="panel-title">Drop here</h4>
+            </div>
+            <div class="fileDrop panel-body">
+              {{#each myData}}
+                <li class="fileName">{{filename}}</li>
+              {{/each}}
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="manageRoles">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-3"></div>
+      <div class="col-sm-6">
+        <div class="panel panel-default">
+          <div class="panel-heading">Manage Roles</div>
+          <div class="panel-body">
+            <form class="roles form-horizontal">
+              <div class="form-group">
+                <div class="col-sm-offset-1 col-sm-10">
+                  <label>
+                    Select user(s)
+                    <select id="selectedUsers" multiple class="form-control">
+                      {{{options}}}
+                    </select>
+                  </label>
+                </div>
+              </div>
+              <div class="form-group">
+                {{{checkboxes}}}
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-1 col-sm-10 form-inline">
+                  <button type="button" name="addRoles" class="btn btn-default col-sm-offset-1 col-sm-4">Save</button>
+                  <button type="button" name="cancel" class="btn btn-default col-sm-offset-2 col-sm-4">Cancel / Close</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-3"></div>
+    </div>
+  </div>
+</template>
+
+<template name="viewActivityLog">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-0"></div>
+      <div class="col-sm-12">
+        <div class="panel panel-default">
+          <!-- Default panel contents -->
+          <div class="panel-heading col-sm-12">
+            <div class="col-sm-1">Activity Log</div>
+            <div class="radio-inline col-sm-1">
+              <label>
+                <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1">
+                1 day
+              </label>
+            </div>
+            <div class="radio-inline col-sm-1">
+              <label>
+                <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+                3 days
+              </label>
+            </div>
+            <div class="radio-inline col-sm-1">
+              <label>
+                <input type="radio" name="optionsRadios" id="optionsRadios3" value="option3">
+                1 week
+              </label>
+            </div>
+            <div class="radio-inline col-sm-1">
+              <label>
+                <input type="radio" name="optionsRadios" id="optionsRadios4" value="option4">
+                Range:
+              </label>
+            </div>
+            <div class="container">
+                <div class='col-sm-3'>From:
+                    <div class="form-group">
+                        <div class='input-group dateFrom datetimepicker' id='dpFrom'>
+                            <input type='text' class="set-due-date form-control" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class='col-sm-3'>To:
+                    <div class="form-group">
+                        <div class='input-group dateTo datetimepicker' id='dpTo'>
+                            <input type='text' class="set-due-date form-control" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+<!--
+            <script type="text/javascript">
+                $(function () {
+                    $('#dpFrom').datetimepicker();
+                    $('#dpTo').datetimepicker({
+                        useCurrent: false //Important! See issue #1075
+                    });
+                    $("#dpFrom").on("dp.change", function (e) {
+                        $('#dpTo').data("DateTimePicker").minDate(e.date);
+                    });
+                    $("#dpTo").on("dp.change", function (e) {
+                        $('#dpFrom').data("DateTimePicker").maxDate(e.date);
+                    });
+                });
+            </script>
+-->
+          </div>
+          <div class="panel-body">
+
+            <!-- Table -->
+            <table class="table">
+              <tr class="headerRow">
+                <th class="headerItem" id="dateTime">Timestamp</th>
+                <th class="headerItem" id="userId">User</th>
+                <th class="headerItem" id="collectionName">Collection</th>
+                <th class="headerItem" id="documentId">Document</th>
+                <th class="headerItem" id="activity">Activity</th>
+              </tr>
+              {{#each activityLog}}
+                <tr class="dataRow" id="{{_id}}">
+                  <td class="dataItem">{{formatDateTime dateTime}}</td>
+                  <td class="dataItem">{{userId}}</td>
+                  <td class="dataItem">{{collectionName}}</td>
+                  <td class="dataItem">{{documentId}}</td>
+                  <td class="dataItem">{{activity}}</td>
+                </tr>
+              {{/each}}
+            </table>
+          </div>
+          <button type="button" class="btn btn-default btn-block" name="closeActivityLog">Close activity log</button>
+        </div>
+      </div>
+      <div class="col-sm-0"></div>
+    </div>
+  </div>
+</template>

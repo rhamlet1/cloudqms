@@ -2,6 +2,6 @@
   word-break: break-all;
 }
 
-.fileBrowse .fileDrop {
-  width: auto;
+.fileBrowse, .fileDrop {
+  width: 100%;
 }

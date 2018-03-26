@@ -54,14 +54,14 @@ Template.TreeData.viewmodel({
 
         },
         icon: function (text) {
-          console.log('text: ' + text);
           const fname = text.name;
           const extension = fname.slice((fname.lastIndexOf(".") - 1 >>> 0) + 2);
-          console.log('extension: ' + extension);
           if (extension === "") {
             return 'icons/folder.png';
           } else if (extension === "txt") {
-            return 'icons/txt.png';
+            return 'icons/doc.png';
+          } else if (extension === "js") {
+            return 'icons/js.png';
           } else if (extension === "pdf") {
             return 'icons/pdf.png';
           } else if (extension === "doc" ||
@@ -80,7 +80,6 @@ Template.TreeData.viewmodel({
           } else {
             return;
           }
-
         }
       },
       jstree: { plugins },
@@ -103,12 +102,10 @@ Template.TreeData.viewmodel({
           const fileId = Meteor.call('renameFile', item, data.text);
         },
         delete(e, item, data) {
-          console.log('delete item typeof: ' + typeof item);
           instance.message.set("Deleting " + item);
           Meteor.call('deleteNode', item);
         },
         copy(e, item, data) {
-          console.log('copy item typeof: ' + typeof item);
           if (data.parent == '#') {
             instance.message.set("Copying to the root.");
 //            return false;  // invoke this line if copying to the root is forbidden
