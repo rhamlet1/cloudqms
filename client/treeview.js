@@ -73,12 +73,10 @@ Template.TreeData.viewmodel({
           const fileId = Meteor.call('renameFile', item, data.text);
         },
         delete(e, item, data) {
-          console.log('delete item typeof: ' + typeof item);
           instance.message.set("Deleting " + item);
           Meteor.call('deleteNode', item);
         },
         copy(e, item, data) {
-          console.log('copy item typeof: ' + typeof item);
           if (data.parent == '#') {
             instance.message.set("Copying to the root.");
 //            return false;  // invoke this line if copying to the root is forbidden
