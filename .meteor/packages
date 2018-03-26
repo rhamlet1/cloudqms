@@ -21,13 +21,11 @@ autopublish@1.0.7             # Publish all data to the clients (for prototyping
 insecure@1.0.7                # Allow all DB writes from clients (for prototyping)
 accounts-password
 useraccounts:unstyled
-msavin:mongol
 email
 iron:router
 qnipp:jstree
 qnipp:treeview
 twbs:bootstrap
-vsivsi:file-collection
 benjaminrh:jquery-cookie
 session
 themeteorchef:jquery-validation
@@ -36,3 +34,9 @@ jquery
 reactive-dict
 manuel:viewmodel
 check
+alanning:roles
+tsega:bootstrap3-datetimepicker
+aldeed:collection2-core
+aldeed:collection2@3.0.0
+msavin:mongol
+vsivsi:file-collection
