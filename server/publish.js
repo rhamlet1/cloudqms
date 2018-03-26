@@ -56,6 +56,14 @@ myFiles.allow({
   }
 });
 
+Meteor.publish('userList', () => {
+  return Meteor.users.find({}, { fields: { _id: 1, emails: 1, profile: 1 } });
+});
+
+Meteor.publish('activityLog', () => {
+  return ActivityLog.find({});
+});
+
 Meteor.publish('allUsers', () => {
   return Meteor.users.find({}, { fields: { _id: 1, emails: 1, profile: 1 } })
 });
