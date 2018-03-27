@@ -61,13 +61,59 @@ function draw(segments) {
         ctx.arc(ctrx, ctry, innerRadius, end, start, true);
         ctx.lineTo(startOuterX, startOuterY);
         ctx.fill();
+
+
+        ctx.fillStyle = fillCol[Math.floor((Math.random() * 9) + 1)];
+        ctx.font = "bold 30px Serif";
+
+        let text = "Arc Text";
+        var metrics = ctx.measureText(text);
+
+        ctx.fillTextArc(text,
+                        ctrx,
+                        ctry,
+                        (outerRadius + innerRadius) / 2,
+                        start,
+                        angle,
+                        metrics.width / text.length, // average character width
+                        metrics.height
+        );
       }
     }
+  }
+};
 
 //    ctx.beginPath();
 //    ctx.fillStyle = 'green'
 //    ctx.arc(ctrx, ctry, (level - 1) * ctrx / (2* (1 + level)), 0, Math.PI * 2);
 //    ctx.fill();
 
-  }
-};
+// Debug code commented out
+
+// Obviously this will have to change depending on the size of each glyph and the circle, etc.
+
+CanvasRenderingContext2D.prototype.fillTextArc = function(text, x, y, radius, startRotation, angle, cw, th){
+   var numDegreesPerLetter = angle / text.length;
+   this.save();
+   this.translate(x, y);  // centre of canvas
+   this.rotate(startRotation + numDegreesPerLetter / 2);
+
+   for (var i=0; i<text.length; i++){
+      this.save();
+      this.translate(radius, 0);
+//      if (i == 0) {
+//          this.fillStyle = 'red';
+          this.translate(cw / 2, -th / 2);
+//          this.fillRect(0,0,4,4);
+          this.rotate(Math.PI / 2);
+          this.translate(-cw / 2, th / 2);
+//          this.fillStyle = 'black';
+//      }
+
+//      this.fillRect(0,0,4,4);
+      this.fillText(text[i], 0, 0);
+      this.restore();
+      this.rotate(numDegreesPerLetter);
+   }
+   this.restore();
+}
