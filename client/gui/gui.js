@@ -1,5 +1,12 @@
 Template.gui.onRendered (() => {
-  const segmentsPerLevel = [1,5,3,7,5,4,6,2,9];
+  const levelText = TreeData.find({ parent: null }).map((item) => {
+    return item.name;
+  });
+  console.log('levelText typeof: ' + typeof levelText);
+  console.log('levelText: ' + levelText);
+  const segmentsPerLevel = [["Optimus QMS "], levelText];
+  console.log('segmentsPerLevel typeof: ' + typeof segmentsPerLevel);
+  console.log('segmentsPerLevel: ' + segmentsPerLevel);
   draw(segmentsPerLevel);
 });
 
@@ -16,12 +23,18 @@ Template.gui.helpers ({
   canvasWidth: () => {
     var canvas = document.getElementById('qmsCanvas');
     return window.innerWidth - 30;
+  },
+  levels: () => {
+    const levelText = TreeData.find({ parent: null }).map((item) => {
+      return item.name;
+    });
   }
 });
 
 function draw(segments) {
+  console.log('segments: ' + segments);
   const levels = segments.length;
-  console.log(levels);
+  console.log('levels: ' + levels);
   var canvas = document.getElementById('qmsCanvas');
   if (canvas.getContext) {
     var ctx = canvas.getContext('2d');
@@ -33,10 +46,10 @@ function draw(segments) {
     const ctry = canvas.height / 2;
 
     for (let i = levels; i >= 1; i = i - 1) {
-      for (let j = 0; j < segments[i - 1]; j = j + 1) {
+      for (let j = 0; j < segments[i-1].length; j = j + 1) {
         const outerRadius = i * ctry / (1 + levels);
         const innerRadius = (i - 1) * ctry / (1 + levels);
-        const angle = Math.PI * 2 / segments[i - 1];
+        const angle = Math.PI * 2 / segments[i - 1].length;
         const startOuterX = ctrx + Math.cos(Math.PI * 3 / 2 + angle * j - angle / 2) * outerRadius;
         const startOuterY = ctry + Math.sin(Math.PI * 3 / 2 + angle * j - angle / 2) * outerRadius;
         const endOuterX = ctrx + Math.cos(Math.PI * 3 / 2 + angle * j + angle / 2) * outerRadius;
@@ -45,6 +58,9 @@ function draw(segments) {
         const startInnerY = ctry + Math.sin(Math.PI * 3 / 2 + angle * j + angle / 2) * innerRadius;
         const endInnerX = ctrx + Math.cos(Math.PI * 3 / 2 + angle * j - angle / 2) * innerRadius;
         const endInnerY = ctry + Math.sin(Math.PI * 3 / 2 + angle * j - angle / 2) * innerRadius;
+        const textRadius = (outerRadius - innerRadius) / 3 + innerRadius;
+        const arcLength = textRadius * angle;
+
         let start = Math.PI * 3 / 2 + angle * j - angle / 2;
         let end = start + angle;
         if (start >= Math.PI * 2) {
@@ -62,20 +78,29 @@ function draw(segments) {
         ctx.lineTo(startOuterX, startOuterY);
         ctx.fill();
 
-
+        ctx.textAlign = "center";
         ctx.fillStyle = fillCol[Math.floor((Math.random() * 9) + 1)];
-        ctx.font = "bold 30px Serif";
+        ctx.font = "bold 30px Serif";  // arbitrary font size;
 
-        let text = "Arc Text";
-        var metrics = ctx.measureText(text);
+        let text = " " + segments[i - 1][j] + " ";
+        var metrics = ctx.measureText(text);  // get information about text
+
+        const textScale = metrics.width * 1.2 / arcLength;  // proportion font size
+        console.log('textScale: ' + textScale);
+        if (textScale > 1) {
+          const scaledFont = 'bold ' + (Math.floor(30 / textScale)).toString() + 'px Serif';
+          console.log('scaledFont: ' + scaledFont);
+          ctx.font = scaledFont;
+        }
+
+        metrics = ctx.measureText(text);  // get information about text
 
         ctx.fillTextArc(text,
                         ctrx,
                         ctry,
-                        (outerRadius + innerRadius) / 2,
+                        textRadius,
                         start,
                         angle,
-                        metrics.width / text.length, // average character width
                         metrics.height
         );
       }
@@ -92,7 +117,7 @@ function draw(segments) {
 
 // Obviously this will have to change depending on the size of each glyph and the circle, etc.
 
-CanvasRenderingContext2D.prototype.fillTextArc = function(text, x, y, radius, startRotation, angle, cw, th){
+CanvasRenderingContext2D.prototype.fillTextArc = function(text, x, y, radius, startRotation, angle, th){
    var numDegreesPerLetter = angle / text.length;
    this.save();
    this.translate(x, y);  // centre of canvas
@@ -103,10 +128,10 @@ CanvasRenderingContext2D.prototype.fillTextArc = function(text, x, y, radius, st
       this.translate(radius, 0);
 //      if (i == 0) {
 //          this.fillStyle = 'red';
-          this.translate(cw / 2, -th / 2);
+//          this.translate(cw / 2, -th / 2);
 //          this.fillRect(0,0,4,4);
           this.rotate(Math.PI / 2);
-          this.translate(-cw / 2, th / 2);
+          this.translate(0, -th / 2);
 //          this.fillStyle = 'black';
 //      }
 
