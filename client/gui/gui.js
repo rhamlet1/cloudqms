@@ -1,10 +1,11 @@
 Template.gui.onRendered (() => {
   const levelText = TreeData.find({ parent: null }).map((item) => {
-    return item.name;
+//    return item.name;
+    return { name: item.name, id: item._id };
   });
   console.log('levelText typeof: ' + typeof levelText);
   console.log('levelText: ' + levelText);
-  const segmentsPerLevel = [["Optimus QMS "], levelText];
+  const segmentsPerLevel = [[{ name: "Optimus QMS ", id: '1234567890' }], levelText];
   console.log('segmentsPerLevel typeof: ' + typeof segmentsPerLevel);
   console.log('segmentsPerLevel: ' + segmentsPerLevel);
   draw(segmentsPerLevel);
@@ -77,12 +78,21 @@ function draw(segments) {
         ctx.arc(ctrx, ctry, innerRadius, end, start, true);
         ctx.lineTo(startOuterX, startOuterY);
         ctx.fill();
+//        ctx.addHitRegion({ id: segments[i - 1][j].id });
 
+/*
+        canvas.addEventListener('mousemove', function(event) {
+          if (event.region) {
+            alert('hit region: ' + event.region);
+          }
+        });
+*/
         ctx.textAlign = "center";
         ctx.fillStyle = fillCol[Math.floor((Math.random() * 9) + 1)];
         ctx.font = "bold 30px Serif";  // arbitrary font size;
 
-        let text = " " + segments[i - 1][j] + " ";
+//        let text = " " + segments[i - 1][j] + " ";
+        let text = " " + segments[i - 1][j].name + " ";
         var metrics = ctx.measureText(text);  // get information about text
 
         const textScale = metrics.width * 1.2 / arcLength;  // proportion font size
