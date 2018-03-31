@@ -217,7 +217,7 @@ function draw(segments) {
         if (segments[i - 1][j].flag === true) {
           ctx.fillStyle = 'magenta';
         } else {
-          ctx.fillStyle = 'white';
+          ctx.fillStyle = fillCol[i];
         }
         ctx.arc(ctrx, ctry, outerRadius, startAngle, endAngle, false);
         if (i === 1) {
