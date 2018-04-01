@@ -196,7 +196,6 @@ Template.gui.events ({
 
         if (getFillType(selectedSegmentName) !== 'folder') {
           var newWindow = window.open(myFile);
-//          newWindow.document.write('<iframe src="' + myFile + '" width="100%" height="100%"></iframe>');
         }
       }
       draw(levelText);
@@ -245,16 +244,16 @@ function draw(segments) {
         // draw the segment
         ctx.beginPath();
         if (segments[i - 1][j].flag === true) {
-          ctx.fillStyle = 'magenta';
+          ctx.fillStyle = '#ffb3e6';
         } else {
           if (fillType === 'folder') {
-            ctx.fillStyle = 'yellow';
+            ctx.fillStyle = '#ffffb3';
           } else if (fillType === 'file') {
-            ctx.fillStyle = 'green';
+            ctx.fillStyle = '#ccffb3';
           } else if (fillType === 'image') {
-            ctx.fillStyle = 'cyan';
+            ctx.fillStyle = '#ccffff';
           } else {
-            ctx.fillStyle = 'light-gray';
+            ctx.fillStyle = '#e0e0eb';
           }
         }
         ctx.arc(ctrx, ctry, outerRadius, startAngle, endAngle, false);
