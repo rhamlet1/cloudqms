@@ -5,7 +5,10 @@ Template.gui.onRendered (() => {
   });
   console.log('levelText typeof: ' + typeof levelText);
   console.log('levelText: ' + levelText);
-  const segmentsPerLevel = [[{ name: "Optimus QMS", id: '1234567890', flag: true }], levelText];
+  const mongoId = new Mongo.ObjectID;
+  // Extract the id String from the object to use as the Meteor id in TreeView
+  const meteorId = mongoId._str;
+  const segmentsPerLevel = [[{ name: "Optimus QMS", id: meteorId, flag: true }], levelText];
   console.log('segmentsPerLevel typeof: ' + typeof segmentsPerLevel);
   console.log('segmentsPerLevel: ' + segmentsPerLevel);
   draw(segmentsPerLevel);
@@ -96,27 +99,37 @@ Template.gui.events ({
         const angle = Math.PI * 2 / segments[i - 1].length;  // arc of segments
         let startAngle = Math.PI * 3 / 2 + angle * j - angle / 2;
         let endAngle = startAngle + angle;
-        if (startAngle >= Math.PI * 2) {
-          startAngle = startAngle - Math.PI * 2;
-        }
-        if (endAngle >= Math.PI * 2) {
-          endAngle = endAngle - Math.PI * 2;
-        }
+        if (i !== 1) {
+          if (startAngle >= Math.PI * 2) {
+            startAngle = startAngle - Math.PI * 2;
+          }
+          if (endAngle >= Math.PI * 2) {
+            endAngle = endAngle - Math.PI * 2;
+          }
 
-        if (clickRadius < outerRadius &&
-            clickRadius >= innerRadius) {
-          if (endAngle > startAngle) {
-            if (clickAngle >= startAngle &&
-                clickAngle < endAngle) {
-              segmentId = segments[i - 1][j].id;
-              segmentLevel = i - 1;
+          if (clickRadius < outerRadius &&
+              clickRadius >= innerRadius) {
+            if (endAngle > startAngle) {
+              if (clickAngle >= startAngle &&
+                  clickAngle < endAngle) {
+                segmentId = segments[i - 1][j].id;
+                segmentName = segments[i - 1][j].name;
+                segmentLevel = i - 1;
+              }
+            } else {
+              if (clickAngle >= startAngle ||
+                  clickAngle < endAngle) {
+                segmentId = segments[i - 1][j].id;
+                segmentName = segments[i - 1][j].name;
+                segmentLevel = i - 1;
+              }
             }
-          } else {
-            if (clickAngle >= startAngle ||
-                clickAngle < endAngle) {
-              segmentId = segments[i - 1][j].id;
-              segmentLevel = i - 1;
-            }
+          }
+        } else {
+          if (clickRadius < outerRadius) {
+            segmentId = segments[i - 1][j].id;
+            segmentName = segments[i - 1][j].name;
+            segmentLevel = i - 1;
           }
         }
       }
@@ -137,54 +150,76 @@ Template.gui.events ({
 
     if (segmentId !== '') {
       // create an empty array variable
+      let children = '';
+      let selectedSegmentId = '';
+      let selectedSegmentName = '';
       let id = segmentId;
       const levelText = [];
-      const firstLevel = [{ name: "Optimus QMS", id: '1234567890', flag: true }];
-      // redefine the segmentsPerLevel variable down to that level
+      const mongoId = new Mongo.ObjectID;
+      // Extract the id String from the object to use as the Meteor id in TreeView
+      const meteorId = mongoId._str;
+      const firstLevel = [{ name: "Optimus QMS", id: meteorId, flag: true }];
 
-      console.log('id: ' + id);
-      console.log('segmentLevel: ' + segmentLevel);
-      const selectedSegment = TreeData.find({ _id: id }).map((item) => {
-        return { name: item.name, id: item._id, parent: item.parent, flag: true };
-      });
-      const selectedSegmentId = selectedSegment[0].id;
-      const selectedSegmentName = selectedSegment[0].name;
-
-      for (let q = segmentLevel; q >= 1; q = q - 1) {
-        const selectedSegment = TreeData.find({ _id: id }).map((item) => {
-          return { name: item.name, id: item._id, parent: item.parent, flag: true };
-        });
-        const selectedSegmentId = selectedSegment[0].id;
-        console.log('selectedSegment: ' + selectedSegment);
-        console.log('selectedSegmentId: ' + selectedSegmentId);
-        // get all the selected segment's siblings
-        const siblings = TreeData.find({ parent: selectedSegment[0].parent }).map((item) => {
+      if (segmentLevel === 0) {
+        levelText.splice(0, 0, firstLevel);
+        // add children of the clicked variable in next level down
+        children = TreeData.find({ parent: null }).map((item) => {
           return { name: item.name, id: item._id, parent: item.parent, flag: false};
         });
-        console.log('siblings: ' + siblings);
-        // go through the siblings and change the flag of the selected sibling
-        for (let r=0; r<siblings.length; r++) {
-          if (siblings[r].id === id) {
-            siblings[r].flag = true;
-          }
+        selectedSegmentId = id;
+        selectedSegmentName = segmentName;
+        if (children.length > 0) {
+          levelText.push(children);
+          console.log('levelText: ' + children);
         }
-        // splice the level data to the beginning of the array variable
-        levelText.splice(0, 0, siblings);
-        // reset id to parent id
-        console.log('levelText: ' + levelText);
-        id = selectedSegment[0].parent;
-        console.log('id: ' + id);
-      }
+      } else {
+        // redefine the segmentsPerLevel variable down to that level
 
-      levelText.splice(0, 0, firstLevel);
-      // add children of the clicked variable in next level down
-      const children = TreeData.find({ parent: selectedSegmentId }).map((item) => {
-        return { name: item.name, id: item._id, parent: item.parent, flag: false};
-      });
-      if (children.length > 0) {
-        levelText.push(children);
-        console.log('levelText: ' + children);
+        console.log('id: ' + id);
+        console.log('segmentLevel: ' + segmentLevel);
+        const selectedSegment = TreeData.findOne({ _id: id });
+        selectedSegmentId = selectedSegment._id;
+        selectedSegmentName = selectedSegment.name;
+        console.log('selectedSegmentId: ' + selectedSegmentId);
+        console.log('selectedSegmentName: ' + selectedSegmentName);
+
+        for (let q = segmentLevel; q >= 1; q = q - 1) {
+          const thisSegment = TreeData.find({ _id: id }).map((item) => {
+            return { name: item.name, id: item._id, parent: item.parent, flag: true };
+          });
+          thisSegmentId = thisSegment[0].id;
+          console.log('thisSegment: ' + thisSegment);
+          console.log('thisSegmentId: ' + thisSegmentId);
+          // get all the selected segment's siblings
+          const siblings = TreeData.find({ parent: thisSegment[0].parent }).map((item) => {
+            return { name: item.name, id: item._id, parent: item.parent, flag: false};
+          });
+          console.log('siblings: ' + siblings);
+          // go through the siblings and change the flag of the selected sibling
+          for (let r=0; r<siblings.length; r++) {
+            if (siblings[r].id === id) {
+              siblings[r].flag = true;
+            }
+          }
+          // splice the level data to the beginning of the array variable
+          levelText.splice(0, 0, siblings);
+          // reset id to parent id
+          console.log('levelText: ' + levelText);
+          id = thisSegment[0].parent;
+          console.log('id: ' + id);
+        }
+
+        levelText.splice(0, 0, firstLevel);
+        // add children of the clicked variable in next level down
+        children = TreeData.find({ parent: selectedSegmentId }).map((item) => {
+          return { name: item.name, id: item._id, parent: item.parent, flag: false};
+        });
+        if (children.length > 0) {
+          levelText.push(children);
+          console.log('levelText: ' + children);
+        }
       }
+      console.log('selectedSegmentId: ' + selectedSegmentId);
       Session.set('selectedFile', selectedSegmentId);
       const fcId = new Mongo.ObjectID(selectedSegmentId);
   //    console.log("myFile: " + fcId);
@@ -229,6 +264,16 @@ function draw(segments) {
         const startOuterY = ctry + Math.sin(Math.PI * 3 / 2 + angle * j - angle / 2) * outerRadius;
         const startInnerX = ctrx + Math.cos(Math.PI * 3 / 2 + angle * j + angle / 2) * innerRadius;
         const startInnerY = ctry + Math.sin(Math.PI * 3 / 2 + angle * j + angle / 2) * innerRadius;
+        let arcRadius = 0;
+        let r = outerRadius;
+
+        if ( i !== 1) {
+          arcRadius = (outerRadius - innerRadius) / 2 + innerRadius;
+          let arcLength = arcRadius * angle;
+          r = arcLength / 2;
+        }
+        const x = ctrx + Math.cos(Math.PI * 3 / 2 + angle * j) * arcRadius;
+        const y = ctry + Math.sin(Math.PI * 3 / 2 + angle * j) * arcRadius;
 
         let startAngle = Math.PI * 3 / 2 + angle * j - angle / 2;
         let endAngle = startAngle + angle;
@@ -244,27 +289,25 @@ function draw(segments) {
         // draw the segment
         ctx.beginPath();
         if (segments[i - 1][j].flag === true) {
-          ctx.fillStyle = '#ffb3e6';
+          ctx.fillStyle = getGrd(ctx, '#ffb3e6', x, y, r);
         } else {
           if (fillType === 'folder') {
-            ctx.fillStyle = '#ffffb3';
+            ctx.fillStyle = getGrd(ctx, '#ffffb3', x, y, r);
           } else if (fillType === 'file') {
-            ctx.fillStyle = '#ccffb3';
+            ctx.fillStyle = getGrd(ctx, '#ccffb3', x, y, r);
           } else if (fillType === 'image') {
-            ctx.fillStyle = '#ccffff';
+            ctx.fillStyle = getGrd(ctx, '#ccffff', x, y, r);
           } else {
-            ctx.fillStyle = '#e0e0eb';
+            ctx.fillStyle = getGrd(ctx, '#e0e0eb', x, y, r);
           }
         }
-        ctx.arc(ctrx, ctry, outerRadius, startAngle, endAngle, false);
-        if (i === 1) {
-          ctx.moveTo(startInnerX, startInnerY);
-        } else {
+        if (segments[i-1].length !== 1) {
+          ctx.arc(ctrx, ctry, outerRadius, startAngle, endAngle, false);
           ctx.lineTo(startInnerX, startInnerY);
-        }
-        ctx.arc(ctrx, ctry, innerRadius, endAngle, startAngle, true);
-        if (i !== 1) {
+          ctx.arc(ctrx, ctry, innerRadius, endAngle, startAngle, true);
           ctx.lineTo(startOuterX, startOuterY);
+        } else {
+          ctx.arc(ctrx, ctry, outerRadius, 0, 2*Math.PI);
         }
         ctx.stroke();
         ctx.fill();
@@ -279,7 +322,7 @@ function draw(segments) {
         let metrics = ctx.measureText(text);  // get information about text
         let fontHeight = 30;
         let textRadius = (outerRadius - innerRadius) / 2 - fontHeight / 2 + innerRadius;
-        let arcLength = textRadius * angle;
+        arcLength = textRadius * angle;
         let textScale = metrics.width * 1.2 / arcLength;  // proportion font size
         // iterate font size scaling until within accepted limit
         while (textScale > 1) {
@@ -289,7 +332,7 @@ function draw(segments) {
           metrics = ctx.measureText(text);  // get information about text
           textRadius = (outerRadius - innerRadius) / 2 - fontHeight / 2 + innerRadius;
           arcLength = textRadius * angle;
-          textScale = metrics.width * 1.2 / arcLength;  // proportion font size
+          textScale = metrics.width / arcLength / 1.2;  // proportion font size
         }
 
         // draw the text
@@ -320,6 +363,13 @@ function getMousePos(canvas, evt) {
     x: evt.clientX - rect.left,
     y: evt.clientY - rect.top
   };
+}
+
+function getGrd(ctx, col, x, y, r1) {
+  var grd = ctx.createRadialGradient(x, y, 0, x, y, r1);
+  grd.addColorStop(0, col);
+  grd.addColorStop(1, "white");
+  return grd;
 }
 
 function getFillType(fname) {
